@@ -62,7 +62,8 @@ namespace WebAPI.Controllers
                 if (splliter[0] == value.KorisnickoIme)
                 {
                     sr.Close();
-                    return Content(HttpStatusCode.BadRequest, "Korisnik vec postoji");
+                    return BadRequest("Korisnik vec postoji");
+                    //return Content(HttpStatusCode.BadRequest, "Korisnik vec postoji");
                 }
             }
 
