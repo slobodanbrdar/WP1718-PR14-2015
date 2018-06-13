@@ -9,11 +9,18 @@
     <script src="Scripts/appSctipts/registerscr.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#regdiv").load("./Content/partials/register.html");
+            $("#reg").bind('click', function () {
+                $("#regdiv").load("./Content/partials/register.html");
+                return false;
+            });
+            
         });
     </script>
 </head>
 <body>
+    <header>
+        <a href="" id="reg">Registracija</a>
+    </header>
     <h1>Taxi sluzba</h1>
     <div id="regdiv">
         
