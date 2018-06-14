@@ -1,9 +1,10 @@
 ﻿$(document).on('click', '#logsubmit', function (e) {
     e.preventDefault();
     $.post('/api/korisnici/Prijava', $('form#logform').serialize())
-        .done(function (status, data, xhr) {
-            localStorage.setItem("ulogovan", data);
-            $("div#regdiv").html("<p>Dobrodosli" + localStorage.getItem("ulogovan") + "</p>");
+        .done(function (data, status, xhr) {
+            localStorage.setItem("ulogovan", JSON.stringify(data));
+            let recievedObject = JSON.parse(localStorage.getItem("ulogovan"));
+            $("div#regdiv").html("<p>Dobrodosli " + recievedObject.KorisnickoIme + "</p>");
         })
         .fail(function (jqXHR) {
             $("form#logform").after("<br/><p>" + jqXHR.responseJSON["Message"] + "</p>");
