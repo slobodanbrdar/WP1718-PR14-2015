@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Web.Http;
 using TaxiSluzba.Models;
 using WebAPI.Helpers;
+using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
@@ -22,18 +23,18 @@ namespace WebAPI.Controllers
             String line;
             while ((line = sr.ReadLine()) != null)
             {
-                String[] spllieter = line.Split(';');
+                String[] splitter = line.Split(';');
                 Korisnik k = new Korisnik();
-                if (spllieter.Count() < 9)
+                if (splitter.Count() < 9)
                     continue;
-                k.KorisnickoIme = spllieter[0];
-                k.Ime = spllieter[2];
-                k.Prezime = spllieter[3];
-                k.EMail = spllieter[4];
-                k.JMBG = spllieter[5];
-                k.Telefon = spllieter[6];
-                k.Pol = spllieter[7];
-                k.Uloga = spllieter[8];
+                k.KorisnickoIme = splitter[0];
+                k.Ime = splitter[2];
+                k.Prezime = splitter[3];
+                k.EMail = splitter[4];
+                k.JMBG = splitter[5];
+                k.Telefon = splitter[6];
+                k.Pol = splitter[7];
+                k.Uloga = splitter[8];
                 
                 korisnici.Add(k);
 
@@ -73,6 +74,48 @@ namespace WebAPI.Controllers
             sw.Write(value.KorisnickoIme + ";" + value.Lozinka + ";" + value.Ime + ";" + value.Prezime + ";" + value.EMail + ";" + value.JMBG + ";" + value.Telefon + ";" + value.Pol + ";" + value.Uloga);
             sw.Close();
             return Ok();
+        }
+
+
+        [HttpPost]
+        [Route("api/korisnici/prijava")]
+        public IHttpActionResult Prijava(PrijavaModel p)
+        {
+            StreamReader sr = new IOHelpers().GetStreamReader("korisnici.txt");
+            String line;
+            while ((line = sr.ReadLine()) != null)
+            {
+                String[] splliter = line.Split(';');
+                if (splliter[0] == p.Username)
+                {
+                    if (splliter[1] == p.Password)
+                    {
+                        Korisnik k = new Korisnik();
+                        k.KorisnickoIme = splliter[0];
+                        k.Lozinka = splliter[1];
+                        k.Ime = splliter[2];
+                        k.Prezime = splliter[3];
+                        k.EMail = splliter[4];
+                        k.JMBG = splliter[5];
+                        k.Telefon = splliter[6];
+                        k.Pol = splliter[7];
+                        k.Uloga = splliter[8];
+                        sr.Close();
+                        return Ok(k);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                        
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            sr.Close();
+            return BadRequest("Pogresan username ili passowrd");
         }
 
         // PUT: api/Korisnici/5

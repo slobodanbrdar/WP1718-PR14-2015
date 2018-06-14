@@ -172,6 +172,7 @@
     <Compile Include="Models\Komentar.cs" />
     <Compile Include="Models\Korisnik.cs" />
     <Compile Include="Models\Lokacija.cs" />
+    <Compile Include="Models\PrijavaModel.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Products.cs" />
     <Compile Include="Models\Voznja.cs" />
@@ -182,10 +183,12 @@
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\partials\Login.html" />
     <Content Include="Content\partials\register.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
+    <Content Include="Scripts\appSctipts\loginscr.js" />
     <Content Include="Scripts\appSctipts\registerscr.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />

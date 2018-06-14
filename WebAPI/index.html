@@ -7,8 +7,10 @@
 
     <script src="Scripts/jquery-1.10.2.js"></script>
     <script src="Scripts/appSctipts/registerscr.js"></script>
+    <script src="Scripts/appSctipts/loginscr.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            $("div#regdiv").load("./Content/partials/login.html");
             $("#reg").bind('click', function () {
                 $("#regdiv").load("./Content/partials/register.html");
                 return false;
