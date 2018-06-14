@@ -1,4 +1,9 @@
-﻿$(document).on('click', '#submit', function (e) {
+﻿$("#reg").bind('click', function (e) {
+    e.preventDefault();
+    $("div#regdiv").load("../../Content/partials/Login.html");
+});
+
+$(document).on('click', '#submit', function (e) {
     e.preventDefault();
     $.post('/api/korisnici/Registracija', $('form#regform').serialize())
         .done(function (status, data, xhr) {

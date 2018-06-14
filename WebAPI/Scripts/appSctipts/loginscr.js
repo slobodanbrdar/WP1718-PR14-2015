@@ -2,6 +2,7 @@
     e.preventDefault();
     $.post('/api/korisnici/Prijava', $('form#logform').serialize())
         .done(function (data, status, xhr) {
+            $("#reg").hide();
             localStorage.setItem("ulogovan", JSON.stringify(data));
             let recievedObject = JSON.parse(localStorage.getItem("ulogovan"));
             $("div#regdiv").html("<p>Dobrodosli " + recievedObject.KorisnickoIme + "</p>");

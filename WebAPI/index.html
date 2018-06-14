@@ -10,11 +10,26 @@
     <script src="Scripts/appSctipts/loginscr.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("div#regdiv").load("./Content/partials/login.html");
-            $("#reg").bind('click', function () {
-                $("#regdiv").load("./Content/partials/register.html");
-                return false;
-            });
+            if (localStorage.getItem("ulogovan") == null) {
+                $("div#regdiv").load("./Content/partials/login.html");
+                $("#reg").bind('click', function () {
+                    if ($("#reg").text() == "Registracija") {
+                        $("#regdiv").load("./Content/partials/register.html");
+                        $("#reg").html("Prijava");
+                    } else {
+                        $("#regdiv").load("./Content/partials/Login.html");
+                        $("#reg").html("Registracija");
+                    }
+
+                    return false;
+                });
+            }
+            else {
+                let data = JSON.parse(localStorage.getItem('ulogovan'));
+                $('div#regdiv').text("Dobrodosli " + data.KorisnickoIme);
+                $('#reg').hide();
+            }
+            
             
         });
     </script>
