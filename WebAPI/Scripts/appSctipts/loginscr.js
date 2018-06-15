@@ -5,9 +5,10 @@
             $("#reg").hide();
             localStorage.setItem("ulogovan", JSON.stringify(data));
             let recievedObject = JSON.parse(localStorage.getItem("ulogovan"));
-            $("div#regdiv").html("<p>Dobrodosli " + recievedObject.KorisnickoIme + "</p>");
+            $("div#errdiv").hide();
+            loadHomepage();
         })
         .fail(function (jqXHR) {
-            $("form#logform").after("<br/><p>" + jqXHR.responseJSON["Message"] + "</p>");
+            $("div#errdiv").text(jqXHR.responseJSON["Message"]).show();
         });
 });

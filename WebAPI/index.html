@@ -7,27 +7,16 @@
 
     <script src="Scripts/jquery-1.10.2.js"></script>
     <script src="Scripts/appSctipts/registerscr.js"></script>
-    <script src="Scripts/appSctipts/loginscr.js"></script>
+    <script src="Scripts/appSctipts/loginscr.js?asd"></script>
+    <script src="Scripts/appSctipts/loadLogin.js"></script>
+    <script src="Scripts/appSctipts/loadHomepage.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             if (localStorage.getItem("ulogovan") == null) {
-                $("div#regdiv").load("./Content/partials/login.html");
-                $("#reg").bind('click', function () {
-                    if ($("#reg").text() == "Registracija") {
-                        $("#regdiv").load("./Content/partials/register.html");
-                        $("#reg").html("Prijava");
-                    } else {
-                        $("#regdiv").load("./Content/partials/Login.html");
-                        $("#reg").html("Registracija");
-                    }
-
-                    return false;
-                });
+                loadLogin();
             }
             else {
-                let data = JSON.parse(localStorage.getItem('ulogovan'));
-                $('div#regdiv').text("Dobrodosli " + data.KorisnickoIme);
-                $('#reg').hide();
+                loadHomepage();
             }
             
             
@@ -35,12 +24,14 @@
     </script>
 </head>
 <body>
-    <header>
+    <header id="hdr">
         <a href="" id="reg">Registracija</a>
+        <a href="" id="odjava"></a>
     </header>
     <h1>Taxi sluzba</h1>
     <div id="regdiv">
         
     </div>
+    <div id="errdiv"/>
 </body>
 </html>
