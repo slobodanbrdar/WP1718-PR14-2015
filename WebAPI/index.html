@@ -4,12 +4,11 @@
     <title></title>
     <meta charset="utf-8" />
 
-
     <script src="Scripts/jquery-1.10.2.js"></script>
     <script src="Scripts/appSctipts/registerscr.js"></script>
-    <script src="Scripts/appSctipts/loginscr.js?asd"></script>
-    <script src="Scripts/appSctipts/loadLogin.js"></script>
-    <script src="Scripts/appSctipts/loadHomepage.js"></script>
+    <script src="Scripts/appSctipts/loginscr.js"></script>
+    <script src="Scripts/appSctipts/functions.js"></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
             if (localStorage.getItem("ulogovan") == null) {
@@ -18,8 +17,8 @@
             else {
                 loadHomepage();
             }
-            
-            
+
+
         });
     </script>
 </head>

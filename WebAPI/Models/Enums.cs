@@ -3,30 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace TaxiSluzba.Models
+namespace WebApi.Models
 {
-    public enum EPol : ushort
+    public enum EPol : byte
     {
-        MUSKO = 0,
-        ZENSKO
+        MUSKO = 0x1,
+        ZENSKO,
     }
 
-    public enum EStatus : ushort
+    public enum EStatus : byte
     {
-        KREIRANA = 0, OTKAZANA, FORMIRANA, OBRADJENA, PRIHVACENA, NEUSPESNA, USPESNA
+        KREIRANA = 0x1, OTKAZANA, FORMIRANA, OBRADJENA, PRIHVACENA, NEUSPESNA, USPESNA,
     }
 
-    public enum ETipAutomobila : ushort
+    public enum ETipAutomobila : byte
     {
-        PUTNICKI = 0,
-        KOMBI
+        PUTNICKI = 0x1,
+        KOMBI,
     }
 
-    public enum EUloga : ushort
+    public enum EUloga : byte
     {
-        MUSTERIJA = 0,
+        MUSTERIJA = 0x1,
         DISPECER,
-        VOZAC
+        VOZAC,
     }
 
 }

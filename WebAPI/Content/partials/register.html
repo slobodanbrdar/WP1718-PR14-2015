@@ -1,4 +1,4 @@
-﻿<form id="regform" method="post">
+﻿<form id="regform" method="post" action="#">
     <table>
         <tr>
             <td colspan="2">Registracija korisnika</td>
@@ -6,7 +6,7 @@
         <tr>
             <td>Korisnicko ime</td>
             <td>
-                <input type="text" name="korisnickoime" required />
+                <input type="text" name="korisnikId" required />
             </td>
         </tr>
         <tr>
@@ -49,10 +49,10 @@
             <td>Pol</td>
             <td>
                 <select name="pol">
-                    <option value="musko">
+                    <option value="1">
                         Musko
                     </option>
-                    <option value="zensko">
+                    <option value="2">
                         Zensko
                     </option>
                 </select>
@@ -60,6 +60,6 @@
         </tr>
 
     </table>
-    <input type="hidden" value="musterija" name="uloga" />
-    <input type="button" id="submit" value="Registruj se" />
+    <input type="hidden" value="1" name="uloga" />
+    <input type="submit" id="submit" value="Registruj se" />
 </form>
