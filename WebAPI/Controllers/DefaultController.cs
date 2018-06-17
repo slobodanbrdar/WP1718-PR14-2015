@@ -14,7 +14,7 @@ namespace WebAPI.Controllers
         public RedirectResult Index()
         {
             var requestUri = Request.RequestUri;
-            return Redirect(requestUri.AbsoluteUri + "index.html");
+            return Redirect(requestUri.AbsoluteUri + "index.html?");
         }
     }
 }

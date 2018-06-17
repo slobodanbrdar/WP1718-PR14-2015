@@ -1,4 +1,4 @@
-﻿<form id="logform" method="post">
+﻿<form id="logform" method="post" action="#">
     <table>
       <tr>
           <td colspan="2" align="center">
@@ -24,8 +24,10 @@
       <tr>
           <td>&nbsp;</td>
           <td>
-              <input type="button" id="logsubmit" value="Prijava"/>
+              <input type="submit" id="prijava" name="prijava" value="Prijava"/>
           </td>
       </tr>
     </table>
 </form>
+
+<script>bindLog()</script>
