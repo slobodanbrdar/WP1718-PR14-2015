@@ -120,6 +120,10 @@ function validateRegister() {
                 required: true,
                 minlength: 5
             },
+            lozinka2: {
+                required: true,
+                equalTo:"#lozinka"
+            },
             ime: "required",
             prezime: "required",
             email: {
@@ -143,6 +147,10 @@ function validateRegister() {
             lozinka: {
                 required: "Obavezno polje",
                 minlength: "Lozinka mora imati minimum 5 karaktera"
+            },
+            lozinka2: {
+                required: "Obavezno polje",
+                equalTo: "Mora se slagati sa lozinkom"
             },
             ime: "Obavezno polje",
             prezime: "Obavezno polje",
