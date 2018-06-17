@@ -197,6 +197,7 @@
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\partials\change.html" />
     <Content Include="Content\partials\homepageHeader.html" />
     <Content Include="Content\partials\Login.html" />
     <Content Include="Content\partials\register.html" />

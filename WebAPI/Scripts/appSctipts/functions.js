@@ -1,7 +1,16 @@
-﻿function loadHomepage() {
+﻿ 
+
+function loadHomepage() {
     let data = JSON.parse(localStorage.getItem('ulogovan'));
     $('div#regdiv').text("Dobrodosli " + data.KorisnikID);
-    $('#reg').hide();
+
+    $("#promena").show();
+    $("#promena").bind('click', function () {
+        $("#regdiv").load("./Content/partials/change.html");
+        let data = JSON.parse(localStorage.getItem('ulogovan'));
+        //ovo dodaj u change.html, mozda ce raditi $('#regdiv[name="korisnikId"]').val = data.KorisnikID; 
+        return false;
+    });
     $("#odjava").text("Odjava");
     $("#odjava").bind('click', function () {
         localStorage.removeItem('ulogovan');
@@ -9,6 +18,8 @@
         return false;
     });
 }
+
+
 
 function loadLogin() {
     $("div#regdiv").load("./Content/partials/login.html");
