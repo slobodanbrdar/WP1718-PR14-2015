@@ -78,7 +78,7 @@ namespace WebAPI.Controllers
             if (!KorisnikExists(prijava.Username))
                 return BadRequest("Neispravan username ili lozinka");
 
-            Korisnik k = db.Korisnici.Find(prijava.Username);
+            Korisnik k = db.Korisnici.Include(e => e.LokacijaVozaca).ToList().Find(kor => kor.KorisnikID == prijava.Username);
 
             if (k.Lozinka != prijava.Password)
                 return BadRequest("Neispravan username ili lozinka");

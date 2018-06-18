@@ -15,7 +15,10 @@ namespace WebApi.Models
         [Key]
         [Column(Order = 2)]
         public String YKoordinata { get; set; }
-        public Adresa Adresa { get; set; }
+        public String Ulica { get; set; }
+        public String Broj { get; set; }
+        public String Mesto { get; set; }
+        public String PozivniBroj { get; set; }
 
         public Lokacija() { }
         public Lokacija(String x, String y)
