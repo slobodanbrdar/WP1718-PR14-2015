@@ -7,11 +7,12 @@ function loadHomepage() {
     $("#promena").show();
     $("#promena").bind('click', function () {
         $("#regdiv").load("./Content/partials/change.html");
-        let data = JSON.parse(localStorage.getItem('ulogovan'));
-        //ovo dodaj u change.html, mozda ce raditi $('#regdiv[name="korisnikId"]').val = data.KorisnikID; 
+        $("#promena").hide();
+        
         return false;
     });
     $("#odjava").text("Odjava");
+    $("#reg").hide();
     $("#odjava").bind('click', function () {
         localStorage.removeItem('ulogovan');
         location.reload();
@@ -57,7 +58,7 @@ function loadLogin() {
 
 
 function doLogSubmit() {
-    $.post('/api/korisnici/Prijava', $('form#logform').serialize())
+    $.post('/api/korisnici/Prijava', $('form#logform').serialize(), "json")
         .done(function (data, status, xhr) {
             $("#reg").hide();
             localStorage.setItem("ulogovan", JSON.stringify(data));
@@ -179,5 +180,87 @@ function validateRegister() {
             }
         },
         submitHandler: function (form) { doRegistrationSubmit() }
+    });
+}
+
+function doChangeSubmit() 
+{
+    let data = JSON.parse(localStorage.getItem("ulogovan"));
+    $.ajax({
+        data: $("#changeForm").serialize(),
+        type: "PUT",
+        url: "api/Korisnici/" + data.KorisnikID,
+        dataType: "json",
+        success: function () {
+            $.get('api/korisnici/' + data.KorisnikID, function (data, status) {
+                localStorage.setItem("ulogovan", JSON.stringify(data));
+            });
+            loadHomepage();
+        },
+        error: function (status) {
+            alert(status);
+        }
+    });
+}
+
+function validateChange() {
+    $("#changeForm").validate({
+        rules: {
+            korisnikId: {
+                required: true,
+                minlength: 4
+            },
+            lozinka: {
+                required: true,
+                minlength: 5
+            },
+            lozinka2: {
+                required: true,
+                equalTo: "#lozinka"
+            },
+            ime: "required",
+            prezime: "required",
+            email: {
+                email: true
+            },
+            jmbg: {
+                required: true,
+                number: true,
+                minlength: 13,
+                maxlength: 13
+            },
+            telefon: {
+                number: true
+            }
+        },
+        messages: {
+            korisnikId: {
+                required: "Obavezno polje",
+                minlength: "Korisnicko ime mora imati minimum 4 karaktera"
+            },
+            lozinka: {
+                required: "Obavezno polje",
+                minlength: "Lozinka mora imati minimum 5 karaktera"
+            },
+            lozinka2: {
+                required: "Obavezno polje",
+                equalTo: "Mora se slagati sa lozinkom"
+            },
+            ime: "Obavezno polje",
+            prezime: "Obavezno polje",
+            email: {
+                email: "Morate uneti validnu email adresu"
+            },
+            jmbg: {
+                required: "Obavezno polje",
+                number: "Morate uneti broj",
+                minlength: "JMBG mora biti broj od 13 cifara",
+                maxlength: "JMBG mora biti broj od 13 cifara"
+            },
+            telefon: {
+                number: "Morate uneti broj"
+            }
+        },
+        submitHandler: function (form) { doChangeSubmit() }
     });
 }

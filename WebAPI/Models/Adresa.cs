@@ -20,6 +20,7 @@ namespace WebApi.Models
             PozivniBroj = pozivniBroj;
         }
 
+        public Adresa() { }
         public override string ToString()
         {
             return $"{Ulica} {Broj}\n{Mesto} {PozivniBroj}";

@@ -6,7 +6,7 @@
         <tr>
             <td>Korisnicko ime</td>
             <td>
-                <input type="text" name="korisnikId" readonly/>
+                <input type="text" name="korisnikId" readonly />
             </td>
         </tr>
         <tr>
@@ -64,7 +64,45 @@
                 </select>
             </td>
         </tr>
+        <tr id="vozacXrow">
+            <td>
+                X Koordinata
+            </td>
+            <td>
+                <input type="number" name="lokacijavozaca_xkoordinata" />
+            </td>
+        </tr>
+        <tr id="vozacYrow">
+            <td>
+                Y Koordinata
+            </td>
+            <td>
+                <input type="number" name="lokacijavozaca_ykoordinata" />
+            </td>
+        </tr>
     </table>
-    <input type="hidden" value="1" name="uloga" />
+    <input type="hidden" name="uloga" />
     <input type="submit" id="chgsubmit" value="Promeni podatke" />
 </form>
+
+<script>
+    let data = JSON.parse(localStorage.getItem('ulogovan'));
+    $('input[name="korisnikId"]').val(data.KorisnikID);
+    $('input[name="lozinka"]').val(data.Lozinka);
+    $('input[name="ime"]').val(data.Ime);
+    $('input[name="prezime"]').val(data.Prezime);
+    $('input[name="email"]').val(data.EMail);
+    $('input[name="jmbg"]').val(data.JMBG);
+    $('input[name="telefon"]').val(data.Telefon);
+    $('select[name="pol"]').val(data.Pol);
+    $('input[name="uloga"]').val(data.Uloga);
+    if ($("#input[name='uloga']").val == 3) {
+        $("tr#vozacXrow").show();
+        $("tr#vozacYrow").show();
+    }
+    else {
+        $("tr#vozacXrow").hide();
+        $("tr#vozacYrow").hide();
+    }
+    validateChange();
+</script>

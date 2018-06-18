@@ -34,8 +34,9 @@ namespace WebApi.Models
             Voznje = new List<Voznja>();
         }
 
-        public Korisnik(String korisnickoIme, String lozinka, EUloga uloga)
+        public Korisnik(String korisnickoIme, String lozinka, EUloga uloga, String LokacijaVozaca_XKoordinata, String LokacijaVozaca_YKoordinata)
         {
+            Lokacija l = new Lokacija(LokacijaVozaca_XKoordinata, LokacijaVozaca_YKoordinata);
             KorisnikID = korisnickoIme;
             Lozinka = lozinka;
             Uloga = uloga;

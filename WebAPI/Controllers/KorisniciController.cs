@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         [ResponseType(typeof(Korisnik))]
         public IHttpActionResult GetKorisnik(string id)
         {
-            Korisnik korisnik = db.Korisnici.Find(id);
+            Korisnik korisnik = db.Korisnici.Include(e => e.LokacijaVozaca).ToList().Find(kor => kor.KorisnikID == id);
             if (korisnik == null)
             {
                 return NotFound();
