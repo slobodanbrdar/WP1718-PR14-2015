@@ -1,5 +1,5 @@
 ﻿ 
-
+//======================Load pages=========================
 function loadHomepage() {
     let data = JSON.parse(localStorage.getItem('ulogovan'));
     $('div#regdiv').text("Dobrodosli " + data.KorisnikID);
@@ -49,7 +49,9 @@ function loadLogin() {
     });
 }
 
+//====================================================================
 
+//=========================Submit handlers============================
 
 function doLogSubmit() {
     $.post('/api/korisnici/Prijava', $('form#logform').serialize(), "json")
@@ -65,36 +67,6 @@ function doLogSubmit() {
         });
 }
 
-function changeScript() {
-    let data = JSON.parse(localStorage.getItem('ulogovan'));
-    $('input[name="korisnikId"]').val(data.KorisnikID);
-    $('input[name="lozinka"]').val(data.Lozinka);
-    $('input[name="ime"]').val(data.Ime);
-    $('input[name="prezime"]').val(data.Prezime);
-    $('input[name="email"]').val(data.EMail);
-    $('input[name="jmbg"]').val(data.JMBG);
-    $('input[name="telefon"]').val(data.Telefon);
-    $('select[name="pol"]').val(data.Pol);
-    $('input[name="uloga"]').val(data.Uloga);
-    if (data.Uloga == 3) {
-        $("tr.vozacpolje").show();
-        $("input[name='lokacijavozaca_xkoordinata']").val(data.LokacijaVozaca_XKoordinata);
-        $("input[name='lokacijavozaca_ykoordinata']").val(data.LokacijaVozaca_YKoordinata);
-        if (data.LokacijaVozaca != null) {
-            $("input[name='ulica']").val(data.LokacijaVozaca.Ulica);
-            $("input[name='broj']").val(data.LokacijaVozaca.Broj);
-            $("input[name='pozivnibroj']").val(data.LokacijaVozaca.PozivniBroj);
-            $("input[name='mesto']").val(data.LokacijaVozaca.Mesto);
-        }
-        
-    }
-    else {
-        $("tr.vozacpolje").hide();
-    }
-    validateChange();
-}
-
-
 function doRegistrationSubmit() {
     $.post('/api/korisnici/', $('form#regform').serialize())
         .done(function (status, data, xhr) {
@@ -103,6 +75,39 @@ function doRegistrationSubmit() {
             alert(jqXHR.responseJSON["Message"]);
         });
 }
+
+
+function doChangeSubmit() {
+    let data = JSON.parse(localStorage.getItem("ulogovan"));
+    if (data.Uloga == 3) {
+        if ($("input[name='lokacijavozaca_xkoordinata']").val() != data.LokacijaVozaca_XKoordinata || $("input[name='lokacijavozaca_ykoordinata']").val() != data.LokacijaVozaca_YKoordinata) {
+            $("input[name='xkoordinata']").val($("input[name='lokacijavozaca_xkoordinata']").val());
+            $("input[name='ykoordinata']").val($("input[name='lokacijavozaca_ykoordinata']").val());
+            $.post('/api/lokacije/', $('form#changeForm').serialize(), 'json');
+        }
+       
+    }
+    $.ajax({
+        data: $("#changeForm").serialize(),
+        type: "PUT",
+        url: "api/Korisnici/" + data.KorisnikID,
+        dataType: "json",
+        success: function () {
+            $.get('api/korisnici/' + data.KorisnikID, function (data, status) {
+                localStorage.setItem("ulogovan", JSON.stringify(data));
+            });
+            loadHomepage();
+        },
+        error: function (status) {
+            alert(status);
+        }
+    });
+}
+
+//====================================================================
+
+
+//==================Validate functions=================================
 
 function validateLogin() {
     $("#logform").validate({
@@ -193,35 +198,7 @@ function validateRegister() {
     });
 }
 
-function doChangeSubmit() 
-{
-    let data = JSON.parse(localStorage.getItem("ulogovan"));
-    if (data.Uloga == 3) {
-        if ($("input[name='lokacijavozaca_xkoordinata']").val() != data.LokacijaVozaca_XKoordinata || $("input[name='lokacijavozaca_ykoordinata']").val() != data.LokacijaVozaca_YKoordinata) {
-            $("input[name='xkoordinata']").val($("input[name='lokacijavozaca_xkoordinata']").val());
-            $("input[name='ykoordinata']").val($("input[name='lokacijavozaca_ykoordinata']").val());
-            $.post('/api/lokacije/', $('form#changeForm').serialize(), 'json');
-        }
-        else {
-            $(".vozacpolje").hide();
-        }
-    }
-    $.ajax({
-        data: $("#changeForm").serialize(),
-        type: "PUT",
-        url: "api/Korisnici/" + data.KorisnikID,
-        dataType: "json",
-        success: function () {
-            $.get('api/korisnici/' + data.KorisnikID, function (data, status) {
-                localStorage.setItem("ulogovan", JSON.stringify(data));
-            });
-            loadHomepage();
-        },
-        error: function (status) {
-            alert(status);
-        }
-    });
-}
+
 
 function validateChange() {
     $("#changeForm").validate({
@@ -300,3 +277,38 @@ function validateChange() {
         submitHandler: function (form) { doChangeSubmit() }
     });
 }
+
+//====================================================================
+
+
+//=========================Other======================================
+function changeScript() {
+    let data = JSON.parse(localStorage.getItem('ulogovan'));
+    $('input[name="korisnikId"]').val(data.KorisnikID);
+    $('input[name="lozinka"]').val(data.Lozinka);
+    $('input[name="ime"]').val(data.Ime);
+    $('input[name="prezime"]').val(data.Prezime);
+    $('input[name="email"]').val(data.EMail);
+    $('input[name="jmbg"]').val(data.JMBG);
+    $('input[name="telefon"]').val(data.Telefon);
+    $('select[name="pol"]').val(data.Pol);
+    $('input[name="uloga"]').val(data.Uloga);
+    if (data.Uloga == 3) {
+        $("tr.vozacpolje").show();
+        $("input[name='lokacijavozaca_xkoordinata']").val(data.LokacijaVozaca_XKoordinata);
+        $("input[name='lokacijavozaca_ykoordinata']").val(data.LokacijaVozaca_YKoordinata);
+        if (data.LokacijaVozaca != null) {
+            $("input[name='ulica']").val(data.LokacijaVozaca.Ulica);
+            $("input[name='broj']").val(data.LokacijaVozaca.Broj);
+            $("input[name='pozivnibroj']").val(data.LokacijaVozaca.PozivniBroj);
+            $("input[name='mesto']").val(data.LokacijaVozaca.Mesto);
+        }
+
+    }
+    else {
+        $("tr.vozacpolje").hide();
+    }
+    validateChange();
+}
+
+//====================================================================

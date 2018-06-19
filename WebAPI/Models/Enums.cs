@@ -13,7 +13,7 @@ namespace WebApi.Models
 
     public enum EStatus : byte
     {
-        KREIRANA = 0x1, OTKAZANA, FORMIRANA, OBRADJENA, PRIHVACENA, NEUSPESNA, USPESNA,
+        KREIRANA = 0x1, OTKAZANA, FORMIRANA, UTOKU, OBRADJENA, PRIHVACENA, NEUSPESNA, USPESNA,
     }
 
     public enum ETipAutomobila : byte

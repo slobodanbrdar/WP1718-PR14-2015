@@ -20,14 +20,14 @@ namespace WebAPI.Controllers
         // GET: api/Voznje
         public IQueryable<Voznja> GetVoznjas()
         {
-            return db.Voznje;
+            return db.Voznjas;
         }
 
         // GET: api/Voznje/5
         [ResponseType(typeof(Voznja))]
         public IHttpActionResult GetVoznja(string id)
         {
-            Voznja voznja = db.Voznje.Find(id);
+            Voznja voznja = db.Voznjas.Find(id);
             if (voznja == null)
             {
                 return NotFound();
@@ -80,7 +80,7 @@ namespace WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Voznje.Add(voznja);
+            db.Voznjas.Add(voznja);
 
             try
             {
@@ -105,13 +105,13 @@ namespace WebAPI.Controllers
         [ResponseType(typeof(Voznja))]
         public IHttpActionResult DeleteVoznja(string id)
         {
-            Voznja voznja = db.Voznje.Find(id);
+            Voznja voznja = db.Voznjas.Find(id);
             if (voznja == null)
             {
                 return NotFound();
             }
 
-            db.Voznje.Remove(voznja);
+            db.Voznjas.Remove(voznja);
             db.SaveChanges();
 
             return Ok(voznja);
@@ -128,7 +128,7 @@ namespace WebAPI.Controllers
 
         private bool VoznjaExists(string id)
         {
-            return db.Voznje.Count(e => e.VoznjaID == id) > 0;
+            return db.Voznjas.Count(e => e.VoznjaID == id) > 0;
         }
     }
 }
