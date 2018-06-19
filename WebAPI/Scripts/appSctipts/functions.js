@@ -18,6 +18,16 @@ function loadHomepage() {
         location.reload();
         return false;
     });
+    $("#dodajvozaca").bind('click', function () {
+        $("#regdiv").load("./Content/partials/addDriver.html");
+        return false;
+    });
+    if (data.Uloga == 2) {
+        $("#dodajvozaca").show();
+    }
+    else {
+        $("#dodajvozaca").hide();
+    }
 }
 
 
@@ -70,10 +80,13 @@ function changeScript() {
         $("tr.vozacpolje").show();
         $("input[name='lokacijavozaca_xkoordinata']").val(data.LokacijaVozaca_XKoordinata);
         $("input[name='lokacijavozaca_ykoordinata']").val(data.LokacijaVozaca_YKoordinata);
-        $("input[name='ulica']").val(data.LokacijaVozaca.Ulica);
-        $("input[name='broj']").val(data.LokacijaVozaca.Broj);
-        $("input[name='pozivnibroj']").val(data.LokacijaVozaca.PozivniBroj);
-        $("input[name='mesto']").val(data.LokacijaVozaca.Mesto);
+        if (data.LokacijaVozaca != null) {
+            $("input[name='ulica']").val(data.LokacijaVozaca.Ulica);
+            $("input[name='broj']").val(data.LokacijaVozaca.Broj);
+            $("input[name='pozivnibroj']").val(data.LokacijaVozaca.PozivniBroj);
+            $("input[name='mesto']").val(data.LokacijaVozaca.Mesto);
+        }
+        
     }
     else {
         $("tr.vozacpolje").hide();

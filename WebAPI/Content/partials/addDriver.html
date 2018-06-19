@@ -1,0 +1,86 @@
+﻿<form id="regform" method="post" action="#">
+    <table>
+        <tr>
+            <td colspan="2">Registracija korisnika</td>
+        </tr>
+        <tr>
+            <td>Korisnicko ime</td>
+            <td>
+                <input type="text" name="korisnikId" />
+            </td>
+        </tr>
+        <tr>
+            <td>Lozinka</td>
+            <td>
+                <input type="password" name="lozinka" id="lozinka" />
+            </td>
+        </tr>
+        <tr>
+            <td>Potrvrdite lozinku</td>
+            <td>
+                <input type="password" name="lozinka2" />
+            </td>
+        </tr>
+        <tr>
+            <td>Ime</td>
+            <td>
+                <input type="text" name="ime" />
+            </td>
+        </tr>
+        <tr>
+            <td>Prezime</td>
+            <td>
+                <input type="text" name="prezime" />
+            </td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>
+                <input type="email" name="email" />
+            </td>
+        </tr>
+        <tr>
+            <td>JMBG</td>
+            <td>
+                <input type="number" name="jmbg" />
+            </td>
+        </tr>
+        <tr>
+            <td>Broj telefona</td>
+            <td>
+                <input type="number" name="telefon" />
+            </td>
+        </tr>
+        <tr>
+            <td>Pol</td>
+            <td>
+                <select name="pol">
+                    <option value="1">
+                        Musko
+                    </option>
+                    <option value="2">
+                        Zensko
+                    </option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Automobil
+            </td>
+            <td>
+                <select name="zeljenitip">
+                    <option value="1">
+                        Putnicki
+                    </option>
+                    <option value="2">
+                        Kombi
+                    </option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" value="3" name="uloga" />
+    <input type="submit" id="regsubmit" value="Dodaj vozaca" />
+</form>
+<script>validateRegister()</script>
