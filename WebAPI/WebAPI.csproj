@@ -205,6 +205,8 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
+    <Content Include="Scripts\additional-methods.js" />
+    <Content Include="Scripts\additional-methods.min.js" />
     <Content Include="Scripts\appSctipts\functions.js" />
     <Content Include="Scripts\appSctipts\loginscr.js" />
     <Content Include="Scripts\appSctipts\registerscr.js" />

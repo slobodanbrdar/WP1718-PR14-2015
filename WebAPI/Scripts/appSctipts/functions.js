@@ -184,9 +184,9 @@ function doChangeSubmit()
 {
     let data = JSON.parse(localStorage.getItem("ulogovan"));
     if (data.Uloga == 3) {
-        if ($("input#lokacijavozaca_xkoordinata").val() != data.LokacijaVozaca_XKoordinata || $("input#lokacijavozaca_ykoordinata").val() != data.LokacijaVozaca_YKoordinata) {
-            $("input[name='xkoordinata']").val($("input#lokacijavozaca_xkoordinata").val());
-            $("input[name='ykoordinata']").val($("input#lokacijavozaca_ykoordinata").val());
+        if ($("input[name='lokacijavozaca_xkoordinata']").val() != data.LokacijaVozaca_XKoordinata || $("input[name='lokacijavozaca_ykoordinata']").val() != data.LokacijaVozaca_YKoordinata) {
+            $("input[name='xkoordinata']").val($("input[name='lokacijavozaca_xkoordinata']").val());
+            $("input[name='ykoordinata']").val($("input[name='lokacijavozaca_ykoordinata']").val());
             $.post('/api/lokacije/', $('form#changeForm').serialize(), 'json');
         }
         else {
@@ -240,12 +240,12 @@ function validateChange() {
                 number: true
             },
             lokacijavozaca_xkoordinata: {
-                depends: function (element) {
+                required: function () {
                     return $("input[name='lokacijavozaca_ykoordinata']").val != null;
                 }
             },
             lokacijavozaca_ykoordinata: {
-                depends: function (element) {
+                required: function () {
                     return $("input[name='lokacijavozaca_xkoordinata']").val != null;
                 }
             }
@@ -278,10 +278,10 @@ function validateChange() {
                 number: "Morate uneti broj"
             }, 
             lokacijavozaca_xkoordinata: {
-                depends: "Uneli ste y koordinatu, morate uneti i x"
+                required: "Uneli ste y koordinatu, morate uneti i x"
             },
             lokacijavozaca_xkoordinata: {
-                depends: "Uneli ste x koordinatu, morate uneti i y"
+                required: "Uneli ste x koordinatu, morate uneti i y"
             }
         },
         submitHandler: function (form) { doChangeSubmit() }
