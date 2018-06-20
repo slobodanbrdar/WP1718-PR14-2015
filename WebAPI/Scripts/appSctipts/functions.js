@@ -183,11 +183,21 @@ function doChangeSubmit() {
                                     loadHomepage();
                                 },
                                 error: function (jqXHR) {
-                                    alert(jqXHR.status);
-                                    localStorage.removeItem('ulogovan');
-                                    loadHomepage();
+                                    if (jqXHR.status == 401) {
+                                        localStorage.removeItem('ulogovan');
+                                        loadHomepage();
+                                    }  
                                 }
                             });
+                        })
+                        .fail(function (jqXHR, textStatus, errorThrown) {
+                            if (jqXHR.status == 401) {
+                                $.ajax({
+                                    data: $("#changeForm").serialize(),
+                                    type: "PUT",
+                                    url: 'api/Lokacije/{}'
+                                })
+                            }
                         })
                 }
 

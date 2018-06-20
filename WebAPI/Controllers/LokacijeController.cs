@@ -25,9 +25,10 @@ namespace WebAPI.Controllers
 
         // GET: api/Lokacije/5
         [ResponseType(typeof(Lokacija))]
-        public IHttpActionResult GetLokacija(string id)
+        [Route("api/Lokacija/{x}_{y}")]
+        public IHttpActionResult GetLokacija(string x, string y)
         {
-            Lokacija lokacija = db.Lokacije.Find(id);
+            Lokacija lokacija = db.Lokacije.Find(x);
             if (lokacija == null)
             {
                 return NotFound();

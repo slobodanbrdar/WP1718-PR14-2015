@@ -10,12 +10,20 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using WebAPI.Models.Entities;
 using WebApi.Models;
+using System.Web;
 
 namespace WebAPI.Controllers
 {
     public class VoznjeController : ApiController
     {
         private VoznjaEntity db = new VoznjaEntity();
+        private List<String> GetLoggedUsers
+        {
+            get
+            {
+                return (List<String>)HttpContext.Current.Application["Ulogovani"];
+            }
+        }
 
         // GET: api/Voznje
         public IQueryable<Voznja> GetVoznjas()
@@ -78,6 +86,28 @@ namespace WebAPI.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (voznja.DispecerID == null && voznja.MusterijaID == null)
+            {
+                return Unauthorized();
+            }
+            else if (voznja.DispecerID != null && !GetLoggedUsers.Contains(voznja.DispecerID))
+            {
+                return Unauthorized();
+            }
+            else if (voznja.MusterijaID != null && !GetLoggedUsers.Contains(voznja.MusterijaID))
+            {
+                return Unauthorized();
+            }
+
+            if (voznja.DispecerID != null)
+            {
+                voznja.StatusVoznje = EStatus.FORMIRANA;
+            }
+            else
+            {
+                voznja.StatusVoznje = EStatus.KREIRANA;
             }
 
             db.Voznjas.Add(voznja);

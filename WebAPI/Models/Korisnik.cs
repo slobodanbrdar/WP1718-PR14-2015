@@ -11,6 +11,8 @@ namespace WebApi.Models
 {
     public class Korisnik
     {
+        private String xKoordinata = "0";
+        private String yKoordinata = "0";
         [Key]
         [Display(Name = "KorisnickoIme")]
         public String KorisnikID { get; set; }
@@ -27,11 +29,36 @@ namespace WebApi.Models
         [Required]
         public EUloga Uloga { get; set; }
 
-        [ForeignKey("LokacijaVozaca_XKoordinata, LokacijaVozaca_YKoordinata")]
+        [ForeignKey("LokacijaKey")]
         public Lokacija LokacijaVozaca { get; set; }
         public ETipAutomobila ZeljeniTip { get; set; }
-        public String LokacijaVozaca_XKoordinata { get; set; }
-        public String LokacijaVozaca_YKoordinata { get; set; }
+        public String LokacijaKey { get; private set; }
+        public String XKoordinata
+        {
+            get
+            {
+                return xKoordinata;
+
+            }
+            set
+            {
+                xKoordinata = value;
+                LokacijaKey = XKoordinata + YKoordinata;
+            }
+        }
+        public String YKoordinata
+        {
+            get
+            {
+                return yKoordinata;
+
+            }
+            set
+            {
+                yKoordinata = value;
+                LokacijaKey = XKoordinata + YKoordinata;
+            }
+        }
 
         public Korisnik()
         {
