@@ -10,11 +10,20 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using WebAPI.Models.Entities;
 using WebApi.Models;
+using System.Web;
+using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
     public class KorisniciController : ApiController
     {
+        private List<String> GetLoggedUsers
+        {
+            get
+            {
+                return (List<String>)HttpContext.Current.Application["Ulogovani"];
+            }
+        }
         private KorisnikEntity db = new KorisnikEntity();
 
         // GET: api/Korisnici
@@ -27,6 +36,9 @@ namespace WebAPI.Controllers
         [ResponseType(typeof(Korisnik))]
         public IHttpActionResult GetKorisnik(string id)
         {
+            if (!GetLoggedUsers.Contains(id))
+                return Content(HttpStatusCode.Unauthorized, "Niste ulogovani");
+
             Korisnik korisnik = db.Korisnici.Include(e => e.LokacijaVozaca).ToList().Find(kor => kor.KorisnikID == id);
             if (korisnik == null)
             {
@@ -34,6 +46,41 @@ namespace WebAPI.Controllers
             }
 
             return Ok(korisnik);
+        }
+
+        [HttpGet]
+        [Route("api/Korisnici/GetPage/{id}")]
+        public IHttpActionResult GetPage(string id)
+        {
+            if (!GetLoggedUsers.Contains(id))
+                return Content(HttpStatusCode.Unauthorized, "Niste prijvaljeni");
+
+            Korisnik korisnik = db.Korisnici.Include(e => e.LokacijaVozaca).ToList().Find(kor => kor.KorisnikID == id);
+            if (korisnik == null)
+            {
+                return NotFound();
+            }
+
+            if (korisnik.Uloga == EUloga.MUSTERIJA)
+                return Ok("./Content/partials/profileKorisnik.html");
+            else if (korisnik.Uloga == EUloga.DISPECER)
+                return Ok("./Content/partials/profileDispecer.html");
+            else
+                return Ok("./Content/partials/profileVozac.html");
+        }
+
+        [HttpPost]
+        [Route("api/Korisnici/Logout")]
+        public IHttpActionResult Logout ([FromBody]string id)
+        {
+
+            if (!GetLoggedUsers.Contains(id))
+            {
+                return Unauthorized();
+            }
+
+            GetLoggedUsers.Remove(id);
+            return Ok();
         }
 
         // PUT: api/Korisnici/5
@@ -49,6 +96,13 @@ namespace WebAPI.Controllers
             {
                 return BadRequest();
             }
+
+            if(!GetLoggedUsers.Contains(id))
+            {
+                return Content(HttpStatusCode.Unauthorized, "Morate biti ulogovani da biste izvrsili ovu operaciju");
+            }
+
+            
 
             db.Entry(korisnik).State = EntityState.Modified;
 
@@ -83,11 +137,75 @@ namespace WebAPI.Controllers
             if (k.Lozinka != prijava.Password)
                 return BadRequest("Neispravan username ili lozinka");
 
+            if (!GetLoggedUsers.Contains(k.KorisnikID))
+                GetLoggedUsers.Add(k.KorisnikID);
+
             return Ok(k);
         }
 
+        [HttpPost]
+        [Route ("api/Korisnici/DodajVozaca")]
+        public IHttpActionResult PostVozac(VozacRegistrationModel vozac)
+        {
+            String sender = vozac.IdSender;
+
+            if (!GetLoggedUsers.Contains(sender))
+            {
+                return Unauthorized();
+            }
+
+            Korisnik korisnik = db.Korisnici.Include(e => e.LokacijaVozaca).ToList().Find(kor => kor.KorisnikID == vozac.IdSender);
+            if (korisnik == null)
+            {
+                return NotFound();
+            }
+
+            if (korisnik.Uloga != EUloga.DISPECER)
+            {
+                return Unauthorized();
+            }
+
+            Korisnik korVozac = new Korisnik()
+            {
+                KorisnikID = vozac.KorisnikID,
+                EMail = vozac.EMail,
+                Ime = vozac.Ime,
+                Prezime = vozac.Prezime,
+                JMBG = vozac.JMBG,
+                Lozinka = vozac.Lozinka,
+                Pol = vozac.Pol,
+                Telefon = vozac.Telefon,
+                Uloga = EUloga.VOZAC,
+                ZeljeniTip = vozac.ZeljeniTip
+            };
+
+
+            db.Korisnici.Add(korVozac);
+
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                if (KorisnikExists(korVozac.KorisnikID))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok();
+        }
+        
+
         // POST: api/Korisnici
         [ResponseType(typeof(Korisnik))]
+        
         public IHttpActionResult PostKorisnik(Korisnik korisnik)
         {
             if (!ModelState.IsValid)
@@ -97,7 +215,12 @@ namespace WebAPI.Controllers
             if (KorisnikExists(korisnik.KorisnikID))
                 return BadRequest("Korisnik vec postoji");
 
+            if (korisnik.Uloga == EUloga.DISPECER || korisnik.Uloga == EUloga.VOZAC)
+                return Content(HttpStatusCode.Unauthorized, "Ne mozete registrovati vozaca ili dispecera");
+
             db.Korisnici.Add(korisnik);
+
+            
 
             try
             {
@@ -117,6 +240,7 @@ namespace WebAPI.Controllers
 
             return CreatedAtRoute("DefaultApi", new { id = korisnik.KorisnikID }, korisnik);
         }
+
 
         // DELETE: api/Korisnici/5
         [ResponseType(typeof(Korisnik))]

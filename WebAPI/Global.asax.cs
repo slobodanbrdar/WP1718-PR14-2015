@@ -18,6 +18,8 @@ namespace WebAPI
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            HttpContext.Current.Application["Ulogovani"] = new List<String>();
         }
     }
 }
