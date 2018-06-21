@@ -46,7 +46,7 @@ namespace WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != lokacija.XKoordinata)
+            if (id != lokacija.LokacijaKey)
             {
                 return BadRequest();
             }

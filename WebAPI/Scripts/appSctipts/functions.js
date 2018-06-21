@@ -9,6 +9,42 @@ function loadHomepage() {
         success: function (data) {
             $('div#regdiv').text("Dobrodosli " + data.KorisnikID);
 
+            if (data.Uloga == 1 || data.Uloga == 2) {
+                $("#dodajvoznju").show();
+                $("#dodajvoznju").bind('click', function () {
+                    if (data.Uloga == 1) {
+                        $("div#regdiv").load("./Content/partials/dodajVoznjuMusterija.html");
+                    }
+                    else {
+                        $("div#regdiv").load("./Content/partials/dodajVoznjuDispecer.html");
+                    }
+                    return false;
+                });
+
+                if (data.Uloga == 1) {
+                    $("#prikazivoznje").show();
+                    $("#prikazivoznje").bind('click', function (e) {
+                        e.preventDefault();
+                        $.ajax({
+                            type: "GET",
+                            url: "api/korisnici/KorisnickeVoznje/" + localStorage.getItem('ulogovan'),
+                            dataType: "json",
+                            success: function (data) {
+                                ispisiTabeluVoznji(data);
+                                
+                            },
+                            error: function (jqXHR) {
+                                alert(jqXHR.statusText);
+                                loadHomepage();
+                                
+                            }
+                        })
+
+                        
+                    });
+                }
+            }
+
             $("#promena").show();
             $("#promena").bind('click', function () {
                 $.ajax({
@@ -68,39 +104,6 @@ function loadHomepage() {
             
         }
     });
-    //if (data != null) {
-    //    $('div#regdiv').text("Dobrodosli " + data.KorisnikID);
-
-    //    $("#promena").show();
-    //    $("#promena").bind('click', function () {
-    //        $("#regdiv").load("./Content/partials/change.html");
-    //        $("#promena").hide();
-
-    //        return false;
-    //    });
-    //    $("#odjava").text("Odjava");
-    //    $("#reg").hide();
-    //    $("#odjava").bind('click', function () {
-    //        localStorage.removeItem('ulogovan');
-    //        location.reload();
-    //        return false;
-    //    });
-    //    $("#dodajvozaca").bind('click', function () {
-    //        $("#regdiv").load("./Content/partials/addDriver.html");
-    //        return false;
-    //    });
-    //    if (data.Uloga == 2) {
-    //        $("#dodajvozaca").show();
-    //    }
-    //    else {
-    //        $("#dodajvozaca").hide();
-    //    }
-    //}
-    //else {
-    //    //ostalo od prethodne konekcije...
-    //    localStorage.removeItem('ulogovan');
-    //    location.reload();
-    //}
     
 }
 
@@ -191,11 +194,23 @@ function doChangeSubmit() {
                             });
                         })
                         .fail(function (jqXHR, textStatus, errorThrown) {
-                            if (jqXHR.status == 401) {
+                            if (jqXHR.status == 409) {
+                                let x = $("input[name='xkoordinata']").val();
+                                let y = $("input[name='ykoordinata']").val();
                                 $.ajax({
                                     data: $("#changeForm").serialize(),
                                     type: "PUT",
-                                    url: 'api/Lokacije/{}'
+                                    url: 'api/Lokacije/' + x + y,
+                                    success: function () {
+                                        loadHomepage();
+                                    },
+                                    error: function (jqXHR) {
+                                        alert(jqXHR.statusText);
+                                        if (jqXHR.status == 401) {
+                                            localStorage.removeItem('ulogovan');
+                                        }
+                                        loadHomepage();
+                                    }
                                 })
                             }
                         })
@@ -488,8 +503,8 @@ function changeScript() {
             $('input[name="uloga"]').val(data.Uloga);
             if (data.Uloga == 3) {
                 $("tr.vozacpolje").show();
-                $("input[name='lokacijavozaca_xkoordinata']").val(data.LokacijaVozaca_XKoordinata);
-                $("input[name='lokacijavozaca_ykoordinata']").val(data.LokacijaVozaca_YKoordinata);
+                $("input[name='lokacijavozaca_xkoordinata']").val(data.XKoordinata);
+                $("input[name='lokacijavozaca_ykoordinata']").val(data.YKoordinata);
                 if (data.LokacijaVozaca != null) {
                     $("input[name='ulica']").val(data.LokacijaVozaca.Ulica);
                     $("input[name='broj']").val(data.LokacijaVozaca.Broj);

@@ -25,12 +25,15 @@ namespace WebAPI.Controllers
             }
         }
         private KorisnikEntity db = new KorisnikEntity();
+        private VoznjaEntity voznje = new VoznjaEntity();
 
         // GET: api/Korisnici
         public IQueryable<Korisnik> GetKorisnici()
         {
             return db.Korisnici;
         }
+        
+
 
         // GET: api/Korisnici/5
         [ResponseType(typeof(Korisnik))]
@@ -81,6 +84,27 @@ namespace WebAPI.Controllers
 
             GetLoggedUsers.Remove(id);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route ("api/Korisnici/KorisnickeVoznje/{id}")]
+        public IHttpActionResult GetUserDrives(String id)
+        {
+            Korisnik kor = db.Korisnici.Include(korisnik => korisnik.Voznje).ToList().Find(k => k.KorisnikID == id);
+
+            if (kor == null)
+                return NotFound();
+
+            if (!GetLoggedUsers.Contains(id))
+                return Unauthorized();
+
+            if (kor.Uloga == EUloga.VOZAC)
+            {
+                return Unauthorized();
+            }
+            
+
+            return Ok(voznje.Voznjas.Where(i => i.MusterijaID == id));
         }
 
         // PUT: api/Korisnici/5

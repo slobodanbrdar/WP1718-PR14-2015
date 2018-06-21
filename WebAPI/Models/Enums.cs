@@ -18,7 +18,8 @@ namespace WebApi.Models
 
     public enum ETipAutomobila : byte
     {
-        PUTNICKI = 0x1,
+        PROIZVOLJNO = 0,
+        PUTNICKI,
         KOMBI,
     }
 

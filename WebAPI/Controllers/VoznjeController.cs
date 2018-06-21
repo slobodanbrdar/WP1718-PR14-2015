@@ -79,6 +79,8 @@ namespace WebAPI.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        
+
         // POST: api/Voznje
         [ResponseType(typeof(Voznja))]
         public IHttpActionResult PostVoznja(Voznja voznja)
@@ -100,6 +102,8 @@ namespace WebAPI.Controllers
             {
                 return Unauthorized();
             }
+
+            
 
             if (voznja.DispecerID != null)
             {

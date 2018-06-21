@@ -200,6 +200,8 @@
     <Content Include="Content\css\bootstrap.min.css" />
     <Content Include="Content\partials\addDriver.html" />
     <Content Include="Content\partials\change.html" />
+    <Content Include="Content\partials\dodajVoznjuDispecer.html" />
+    <Content Include="Content\partials\dodajVoznjuMusterija.html" />
     <Content Include="Content\partials\homepageHeader.html" />
     <Content Include="Content\partials\Login.html" />
     <Content Include="Content\partials\profileDispecer.html" />
@@ -214,6 +216,7 @@
     <Content Include="Scripts\appSctipts\functions.js" />
     <Content Include="Scripts\appSctipts\loginscr.js" />
     <Content Include="Scripts\appSctipts\registerscr.js" />
+    <Content Include="Scripts\appSctipts\voznjeFunctions.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
@@ -241,6 +244,8 @@
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\moment-with-locales.js" />
+    <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Web.config" />
