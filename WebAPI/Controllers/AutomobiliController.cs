@@ -10,12 +10,22 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using WebAPI.Models.Entities;
 using WebApi.Models;
+using WebAPI.Models;
+using System.Web;
 
 namespace WebAPI.Controllers
 {
     public class AutomobiliController : ApiController
     {
         private AutomobilEntity db = new AutomobilEntity();
+        private KorisnikEntity kor = new KorisnikEntity();
+        private List<String> GetLoggedUsers
+        {
+            get
+            {
+                return (List<String>)HttpContext.Current.Application["Ulogovani"];
+            }
+        }
 
         // GET: api/Automobili
         public IQueryable<Automobil> GetAutomobili()
@@ -73,8 +83,32 @@ namespace WebAPI.Controllers
 
         // POST: api/Automobili
         [ResponseType(typeof(Automobil))]
-        public IHttpActionResult PostAutomobil(Automobil automobil)
+        public IHttpActionResult PostAutomobil(AutomobilRegModel automobilreg)
         {
+            if (!GetLoggedUsers.Contains(automobilreg.IDSender))
+            {
+                return Unauthorized();
+            }
+
+            Korisnik k = kor.Korisnici.Find(automobilreg.IDSender);
+            if (k == null)
+            {
+                return NotFound();
+            }
+
+            if (k.Uloga != EUloga.DISPECER)
+                return Unauthorized();
+
+            Automobil automobil = new Automobil()
+            {
+                BrojTaxiVozila = automobilreg.BrojTaxiVozila,
+                Godiste = automobilreg.Godiste,
+                RegistarskaOznaka = automobilreg.RegistarskaOznaka,
+                TipAutomobila = automobilreg.TipAutomobila,
+                Vozac = automobilreg.KorisnikID
+            };
+
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

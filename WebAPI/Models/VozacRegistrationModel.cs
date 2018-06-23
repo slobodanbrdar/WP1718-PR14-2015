@@ -19,6 +19,7 @@ namespace WebAPI.Models
         public String Telefon { get; set; }
         public EUloga Uloga { get; set; }
         public ETipAutomobila ZeljeniTip { get; set; }
+        public String AutomobilID { get; set; }
 
     }
 }

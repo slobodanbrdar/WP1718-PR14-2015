@@ -140,3 +140,9 @@ function getStatus(num) {
         return "Uspesna";
     }
 }
+
+function dodajVoznjuDispecerScript() {
+    $.ajax({
+
+    });
+}

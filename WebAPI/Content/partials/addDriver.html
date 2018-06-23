@@ -79,8 +79,34 @@
                 </select>
             </td>
         </tr>
+        <tr>
+            <td>
+                Oznaka taksi vozila
+            </td>
+            <td>
+                <input type="number" name="brojtaxivozila" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Godiste autommobila
+            </td>
+            <td>
+                <input type="number" name="godiste" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Registarska oznaka
+            </td>
+            <td>
+                <input type="text" name="registarskaoznaka"/>
+            </td>
+        </tr>
     </table>
     <input type="hidden" name="IDSender" />
+    <input type="hidden" name="tipautomobila" />
+    <input type="hidden" name="automobilID" />
     <input type="submit" id="regsubmit" value="Dodaj vozaca" />
 </form>
 <script>validateDriverRegister()</script>

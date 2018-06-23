@@ -200,7 +200,8 @@ namespace WebAPI.Controllers
                 Pol = vozac.Pol,
                 Telefon = vozac.Telefon,
                 Uloga = EUloga.VOZAC,
-                ZeljeniTip = vozac.ZeljeniTip
+                ZeljeniTip = vozac.ZeljeniTip,
+                AutomobilID = vozac.AutomobilID
             };
 
 

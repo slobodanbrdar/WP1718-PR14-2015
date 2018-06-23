@@ -174,8 +174,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\IOHelpers.cs" />
     <Compile Include="Models\Automobil.cs" />
+    <Compile Include="Models\AutomobilRegModel.cs" />
     <Compile Include="Models\Entities\KomentarEntity.cs" />
     <Compile Include="Models\Entities\KorisnikEntity.cs" />
     <Compile Include="Models\Entities\AutomobilEntity.cs" />

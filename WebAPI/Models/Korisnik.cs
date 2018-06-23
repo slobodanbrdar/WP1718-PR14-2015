@@ -32,6 +32,10 @@ namespace WebApi.Models
         [ForeignKey("LokacijaKey")]
         public Lokacija LokacijaVozaca { get; set; }
         public ETipAutomobila ZeljeniTip { get; set; }
+        
+        public String AutomobilID { get; set; }
+        [ForeignKey ("AutomobilID")]
+        public Automobil TaxiVozilo { get; set; }
         public String LokacijaKey { get; private set; }
         public String XKoordinata
         {

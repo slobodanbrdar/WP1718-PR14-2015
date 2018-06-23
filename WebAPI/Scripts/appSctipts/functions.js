@@ -31,14 +31,14 @@ function loadHomepage() {
                             dataType: "json",
                             success: function (data) {
                                 ispisiTabeluVoznji(data);
-                                
+
                             },
                             error: function (jqXHR) {
                                 alert(jqXHR.statusText);
                                 loadHomepage();
-                                
+
                             }
-                        })
+                        });
 
                         
                     });
@@ -82,7 +82,7 @@ function loadHomepage() {
                         location.reload();
                         return false;
                     }
-                })                    
+                });                    
                 
             });
             $("#dodajvozaca").bind('click', function () {
@@ -154,13 +154,28 @@ function doRegistrationSubmit() {
 
 function doDriverRegistrationSubmit() {
     $("input[name='IDSender']").val(localStorage.getItem('ulogovan'));
-    $.post('api/Korisnici/DodajVozaca', $('form#regform').serialize())
-        .done(function () {
+    $("input[name='tipautomobila']").val($("select[name='zeljenitip']").val());
+    $("input[name='automobilID']").val($("input[name='brojtaxivozila']").val());
+    $.ajax({
+        type: "POST",
+        data: $('form#regform').serialize(),
+        dataType: "json",
+        url: "api/automobili/",
+        success: function () {
+            $.post('api/Korisnici/DodajVozaca', $('form#regform').serialize())
+                .done(function () {
+                    loadHomepage();
+                })
+                .fail(function (jqXHR) {
+                    alert(jqXHR.responseJSON["Message"]);
+                });
+        },
+        error: function (jqXHR) {
+            alert(jqXHR.statusText);
             loadHomepage();
-        })
-        .fail(function (jqXHR) {
-            alert(jqXHR.responseJSON["Message"]);
-        });
+        }
+    })
+   
 }
 
 
@@ -189,7 +204,7 @@ function doChangeSubmit() {
                                     if (jqXHR.status == 401) {
                                         localStorage.removeItem('ulogovan');
                                         loadHomepage();
-                                    }  
+                                    }
                                 }
                             });
                         })
@@ -213,7 +228,7 @@ function doChangeSubmit() {
                                     }
                                 })
                             }
-                        })
+                        });
                 }
 
             }
@@ -273,7 +288,7 @@ function validateLogin() {
                 minlength: "Lozinka mora biti minimum 5 slova dugacak"
             }
         },
-        submitHandler: function (form) { doLogSubmit() }
+        submitHandler: function (form) { doLogSubmit(); }
 
     });
 }
@@ -369,6 +384,15 @@ function validateDriverRegister() {
             },
             telefon: {
                 number: true
+            },
+            brojtaxivozila: {
+                required: true
+            },
+            godiste: {
+                range: [1994, 2018]
+            },
+            registarskaoznaka: {
+                required: true
             }
         },
         messages: {
@@ -397,9 +421,19 @@ function validateDriverRegister() {
             },
             telefon: {
                 number: "Morate uneti broj"
+            },
+            brojtaxivozila: {
+                required: "Obavezno polje"
+            },
+            godiste: {
+                range: "Godiste moze biti izmedju 1994 i 2018"
+            },
+            registarskaoznaka: {
+                required: "Obavezno polje"
             }
+
         },
-        submitHandler: function (form) { doDriverRegistrationSubmit() }
+        submitHandler: function (form) { doDriverRegistrationSubmit(); }
     });
 }
 
@@ -478,7 +512,7 @@ function validateChange() {
                 required: "Uneli ste x koordinatu, morate uneti i y"
             }
         },
-        submitHandler: function (form) { doChangeSubmit() }
+        submitHandler: function (form) { doChangeSubmit(); }
     });
 }
 
@@ -522,7 +556,7 @@ function changeScript() {
             localStorage.removeItem('ulogovan');
             location.reload();
         }
-    })
+    });
    
 }
 
