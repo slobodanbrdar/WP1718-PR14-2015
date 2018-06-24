@@ -62,6 +62,8 @@ namespace WebApi.Models
             {
                 odrediste_XKoordinata = value;
                 Odrediste_Key = Odrediste_XKoordinata + Odrediste_YKoordinata;
+                if (Odrediste_XKoordinata == null || Odrediste_YKoordinata == null)
+                    Odrediste_Key = null;
             }
         }
         public String Odrediste_YKoordinata
@@ -74,6 +76,8 @@ namespace WebApi.Models
             {
                 odrediste_YKoordinata = value;
                 Odrediste_Key = Odrediste_XKoordinata + Odrediste_YKoordinata;
+                if (Odrediste_XKoordinata == null || Odrediste_YKoordinata == null)
+                    Odrediste_Key = null;
             }
         }
 

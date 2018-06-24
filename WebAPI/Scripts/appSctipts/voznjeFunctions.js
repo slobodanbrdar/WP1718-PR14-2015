@@ -93,14 +93,59 @@ function ispisiTabeluVoznji(data) {
                 <td>Zeljeni tip</td><td>Iznos</td><td>Status voznje</td></tr > ";
     $.each(data, function (i, val) {
         content += "<tr> <td>" + val.VoznjaID + "</td> <td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
-            val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata +"</td><td>" + getTip(val.ZeljeniTip) +
-            "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> </tr>";
+            val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
+            "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td hidden>";
+        if (val.StatusVoznje == 1) {
+            content += "<td><a href='' id='otkazivoznju'> Otkazi voznju </a> <td></tr>"
+        }
+        else {
+            content += "</tr>"
+        }
     });
 
     content += "</table>";
 
     $("div#regdiv").html(content);
+    $("a#otkazivoznju").bind('click', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+
+        var datumZakazivanja = $(this).parent().siblings().eq(0).text();
+        var korisnikID = localStorage.getItem('ulogovan');
+        var status = 2;
+       
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: {
+                "SenderID": localStorage.getItem("ulogovan"),
+                "VoznjaID": datumZakazivanja
+            },
+            url: "api/Voznje/OtkaziVoznju",
+            success: function () {
+                alert("success");
+            }, 
+            error: function (jqXHR) {
+                alert(jqXHR.statusText);
+                $.ajax({
+                    type: "GET",
+                    url: "api/korisnici/KorisnickeVoznje/" + localStorage.getItem('ulogovan'),
+                    dataType: "json",
+                    success: function (data) {
+                        ispisiTabeluVoznji(data);
+
+                    },
+                    error: function (jqXHR) {
+                        alert(jqXHR.statusText);
+                        loadHomepage();
+
+                    }
+                });
+            }
+        })
+    }) 
 }
+
 
 function getTip(num) {
     if (num == 0) {

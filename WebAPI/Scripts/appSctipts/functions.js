@@ -53,6 +53,7 @@ function loadHomepage() {
                             dataType: "json",
                             success: function (data) {
                                 ispisiTabeluVoznji(data);
+                                
 
                             },
                             error: function (jqXHR) {

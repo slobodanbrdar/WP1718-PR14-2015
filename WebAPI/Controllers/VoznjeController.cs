@@ -11,6 +11,7 @@ using System.Web.Http.Description;
 using WebAPI.Models.Entities;
 using WebApi.Models;
 using System.Web;
+using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
@@ -80,6 +81,52 @@ namespace WebAPI.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        [HttpPost]
+        [Route("api/Voznje/OtkaziVoznju")]
+        public IHttpActionResult OktaziVoznju (OtkazivanjeModel otkazivanje)
+        {
+            if (!GetLoggedUsers.Contains(otkazivanje.SenderID))
+            {
+                return Unauthorized();
+            }
+
+            Korisnik k = kor.Korisnici.Find(otkazivanje.SenderID);
+            if (k == null)
+                return NotFound();
+
+            if (k.Uloga != EUloga.MUSTERIJA)
+                return Unauthorized();
+
+            Voznja v = db.Voznjas.Find(otkazivanje.VoznjaID);
+            if (v == null)
+                return NotFound();
+
+            if (v.StatusVoznje != EStatus.KREIRANA)
+                return Content(HttpStatusCode.NotAcceptable, "Ne mozete otkazati ovu voznju");
+
+            v.StatusVoznje = EStatus.OTKAZANA;
+            v.Odrediste_XKoordinata = null;
+            v.Odrediste_YKoordinata = null;
+
+            db.Entry(v).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VoznjaExists(v.VoznjaID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return Ok();
+        }
         
 
         // POST: api/Voznje

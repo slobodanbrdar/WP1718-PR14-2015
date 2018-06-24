@@ -185,6 +185,7 @@
     <Compile Include="Models\Komentar.cs" />
     <Compile Include="Models\Korisnik.cs" />
     <Compile Include="Models\Lokacija.cs" />
+    <Compile Include="Models\OtkazivanjeModel.cs" />
     <Compile Include="Models\PrijavaModel.cs" />
     <Compile Include="Models\VozacRegistrationModel.cs" />
     <Compile Include="Models\Voznja.cs" />
@@ -203,6 +204,7 @@
     <Content Include="Content\partials\dodajVoznjuDispecer.html" />
     <Content Include="Content\partials\dodajVoznjuMusterija.html" />
     <Content Include="Content\partials\homepageHeader.html" />
+    <Content Include="Content\partials\kometarOtkazana.html" />
     <Content Include="Content\partials\Login.html" />
     <Content Include="Content\partials\profileDispecer.html" />
     <Content Include="Content\partials\profileKorisnik.html" />

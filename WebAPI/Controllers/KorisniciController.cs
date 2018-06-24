@@ -104,7 +104,7 @@ namespace WebAPI.Controllers
             }
             
 
-            return Ok(voznje.Voznjas.Where(i => i.MusterijaID == id));
+            return Ok(voznje.Voznjas.Include(kom => kom.KomentarVoznje).Where(i => i.MusterijaID == id));
         }
 
         // PUT: api/Korisnici/5
