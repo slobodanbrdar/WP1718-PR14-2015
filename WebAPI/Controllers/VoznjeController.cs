@@ -19,6 +19,7 @@ namespace WebAPI.Controllers
     {
         private VoznjaEntity db = new VoznjaEntity();
         private KorisnikEntity kor = new KorisnikEntity();
+        private KomentarEntity kom = new KomentarEntity();
         private List<String> GetLoggedUsers
         {
             get
@@ -125,7 +126,7 @@ namespace WebAPI.Controllers
                     throw;
                 }
             }
-            return Ok();
+            return Ok(v);
         }
         
 
@@ -203,6 +204,45 @@ namespace WebAPI.Controllers
             }
 
             return CreatedAtRoute("DefaultApi", new { id = voznja.VoznjaID }, voznja);
+        }
+
+        [HttpPost]
+        [Route("api/Voznje/DodeliKomentar")]
+        public IHttpActionResult DodeliKomentarVoznji(DodelaKomentaraModel dm)
+        {
+            if (!GetLoggedUsers.Contains(dm.KorisnikID))
+                return Unauthorized();
+
+            Komentar komentar = kom.Komentari.Find(dm.KomentarID);
+            if (komentar == null)
+                return NotFound();
+
+            Voznja v = db.Voznjas.Find(dm.VoznjaID);
+
+            if (v == null)
+                return NotFound();
+
+            v.KomentarID = dm.KomentarID;
+
+            db.Entry(v).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VoznjaExists(v.VoznjaID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return Ok(v);
+
         }
 
         // DELETE: api/Voznje/5

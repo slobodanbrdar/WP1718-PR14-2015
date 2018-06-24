@@ -87,14 +87,42 @@ function validateVoznjaMusterija() {
     });
 } 
 
+function isisiOpis(par) {
+    if ( par == null) {
+        return "Nije postavljen komentar";
+    }
+    else {
+        return par.Opis;
+    }
+}
+
+function isisiOcenu(par) {
+    if ( par == null) {
+        return "Nije postavljen komentar";
+    }
+    else {
+        return par.Ocena;
+    }
+}
+
+function isisiDatum(par) {
+    if ( par == null) {
+        return "Nije postavljen komentar";
+    }
+    else {
+        return par.KometarID;
+    }
+}
+
 function ispisiTabeluVoznji(data) {
-    var content = '<table border="2"> <tr> <td colspan="10" align="center">Moje voznje</td>';
+    var content = '<table border="2"> <tr> <td colspan="11" align="center">Moje voznje</td>';
     content += "<tr><td>Datum zakazivanja</td> <td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
-                <td>Zeljeni tip</td><td>Iznos</td><td>Status voznje</td></tr > ";
+                <td>Zeljeni tip</td><td>Iznos</td><td>Status voznje</td><td>Komentar</td> <td>Ocena</td> <td>Datum objave</td></tr > ";
     $.each(data, function (i, val) {
         content += "<tr> <td>" + val.VoznjaID + "</td> <td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
             val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
-            "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td hidden>";
+            "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
+            "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td>";
         if (val.StatusVoznje == 1) {
             content += "<td><a href='' id='otkazivoznju'> Otkazi voznju </a> <td></tr>"
         }
@@ -123,7 +151,13 @@ function ispisiTabeluVoznji(data) {
             },
             url: "api/Voznje/OtkaziVoznju",
             success: function () {
-                alert("success");
+                
+                $("div#regdiv").load("./Content/partials/komentarOtkazana.html", function () {
+                    $("input[name='kometarID']").val(moment().format('MMMM Do YYYY, h:mm:ss a'));
+                    $("input[name='vlasnikKomentara']").val(localStorage.getItem('ulogovan'));
+                    $("input[name='komentarisanaVoznja']").val(datumZakazivanja);
+                    doOtkazVoznja();
+                });
             }, 
             error: function (jqXHR) {
                 alert(jqXHR.statusText);
@@ -137,8 +171,9 @@ function ispisiTabeluVoznji(data) {
                     },
                     error: function (jqXHR) {
                         alert(jqXHR.statusText);
-                        loadHomepage();
-
+                        if (jqXHR.status != 406) {
+                            loadHomepage();
+                        }
                     }
                 });
             }
@@ -186,8 +221,57 @@ function getStatus(num) {
     }
 }
 
-function dodajVoznjuDispecerScript() {
-   
+function doOtkazVoznja() {
+    
+    $("form#komentarOtkaz").submit(function (e) {
+
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "api/Komentari",
+            data: $("form#komentarOtkaz").serialize(),
+            success: function (retData) {
+                $.ajax({
+                    type: "POST",
+                    url: "api/voznje/DodeliKomentar",
+                    data: {
+                        "KomentarID": retData.KometarID,
+                        "VoznjaID": retData.KomentarisanaVoznja,
+                        "KorisnikID": retData.VlasnikKomentara
+                    },
+                    success: function () {
+                        alert("Uspesno ste postavili komentar");
+                        $.ajax({
+                            type: "GET",
+                            url: "api/korisnici/KorisnickeVoznje/" + localStorage.getItem('ulogovan'),
+                            dataType: "json",
+                            success: function (data) {
+
+                                ispisiTabeluVoznji(data);
+                            },
+                            error: function (jqXHR) {
+                                alert(jqXHR.statusText);
+                                if (jqXHR.status != 406) {
+                                    loadHomepage();
+                                }
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert(jqXHR.statusText);
+                        loadHomepage();
+                    }
+                })
+               
+                
+            },
+            error: function (jqXHR) {
+                alert(jqXHR.statusText);
+                loadHomepage();
+            }
+        });
+    })
 }
 
 function selectSlobodneVozace(data) {

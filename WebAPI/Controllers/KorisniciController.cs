@@ -102,9 +102,9 @@ namespace WebAPI.Controllers
             {
                 return Unauthorized();
             }
-            
+            List<Voznja> retVoznje = voznje.Voznjas.Include(kom => kom.KomentarVoznje).Where(i => i.MusterijaID == id).ToList();
 
-            return Ok(voznje.Voznjas.Include(kom => kom.KomentarVoznje).Where(i => i.MusterijaID == id));
+            return Ok(retVoznje);
         }
 
         // PUT: api/Korisnici/5
