@@ -1,5 +1,5 @@
 ﻿<form action="" id="voznjaDispecer">
-    <table>
+    <table id="voznjaDispecerTabela">
         <tr>
             <th colspan="3" align="center">
                 Narucivanje voznje
@@ -22,6 +22,36 @@
             </td>
         </tr>
         <tr>
+            <td>Ulica</td>
+            <td>
+                <input type="text" name="ulica" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Broj
+            </td>
+            <td>
+                <input type="number" name="broj" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Mesto
+            </td>
+            <td>
+                <input type="text" name="mesto" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Pozivni broj
+            </td>
+            <td>
+                <input type="number" name="pozivnibroj" />
+            </td>
+        </tr>
+        <tr>
             <td>
                 Zeljeni tip automobila
             </td>
@@ -40,11 +70,13 @@
     </table>
     <input type="hidden" name="statusvoznje" value="3" />
     <input type="hidden" name="dispecerId" />
-    <input type="hidden" name="voznjaid" />
+    <input type="hidden" name="voznjaId" />
+    <input type="hidden" name="xkoordinata" />
+    <input type="hidden" name="ykoordinata" />
     <input type="submit" value="Zakazi voznju" />
 </form>
 <!-- Logika za izabir vozaca iz liste slobodnih -->
 
 <script>
-    
+    validateVoznjaDispecer();
 </script>

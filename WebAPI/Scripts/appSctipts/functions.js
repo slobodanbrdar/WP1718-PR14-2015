@@ -11,14 +11,36 @@ function loadHomepage() {
 
             if (data.Uloga == 1 || data.Uloga == 2) {
                 $("#dodajvoznju").show();
-                $("#dodajvoznju").bind('click', function () {
+                $("#dodajvoznju").bind('click', function (e) {
+                    e.preventDefault();
                     if (data.Uloga == 1) {
                         $("div#regdiv").load("./Content/partials/dodajVoznjuMusterija.html");
                     }
                     else {
-                        $("div#regdiv").load("./Content/partials/dodajVoznjuDispecer.html");
+                        $.ajax({
+                            type: "GET",
+                            dataType: "json",
+                            url: "api/Korisnici/GetFreeDrivers/" + localStorage.getItem('ulogovan'),
+                            success: function (data) {
+                                if (data.length == 0) {
+                                    alert("Nema slobodnih vozaca");
+
+                                } else {
+                                    console.log(data[0].KorisnikID);
+                                    $("div#regdiv").load("./Content/partials/dodajVoznjuDispecer.html", function () {
+                                        var content = selectSlobodneVozace(data);
+                                        $("table#voznjaDispecerTabela").append(content);
+                                    });
+                                }
+                                return false;
+                            },
+                            error: function (jqXHR) {
+                                alert(jqXHR.statusText);
+                                loadHomepage();
+                            }
+                        });
                     }
-                    return false;
+                   
                 });
 
                 if (data.Uloga == 1) {

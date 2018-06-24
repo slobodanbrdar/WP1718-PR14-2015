@@ -17,6 +17,7 @@ namespace WebAPI.Controllers
     public class VoznjeController : ApiController
     {
         private VoznjaEntity db = new VoznjaEntity();
+        private KorisnikEntity kor = new KorisnikEntity();
         private List<String> GetLoggedUsers
         {
             get
@@ -103,6 +104,28 @@ namespace WebAPI.Controllers
                 return Unauthorized();
             }
 
+            Korisnik k = new Korisnik();
+            if (voznja.DispecerID != null)
+            {
+                k = kor.Korisnici.Find(voznja.DispecerID);
+                if (k.Uloga != EUloga.DISPECER)
+                    return Unauthorized();
+
+                Korisnik vozac = kor.Korisnici.Find(voznja.VozacID);
+                if (vozac.ZeljeniTip != voznja.ZeljeniTip)
+                {
+                    return Content(HttpStatusCode.NotAcceptable, "Vozac ne poseduje ovaj tip automobila");
+                }
+            }
+            else if (voznja.MusterijaID != null)
+            {
+                k = kor.Korisnici.Find(voznja.MusterijaID);
+                if (k.Uloga != EUloga.MUSTERIJA)
+                    return Unauthorized();
+
+                if (voznja.VozacID != null)
+                    return Unauthorized();
+            }
             
 
             if (voznja.DispecerID != null)

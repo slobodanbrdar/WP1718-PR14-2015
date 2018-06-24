@@ -266,6 +266,27 @@ namespace WebAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = korisnik.KorisnikID }, korisnik);
         }
 
+        [HttpGet]
+        [Route("api/Korisnici/GetFreeDrivers/{id}")]
+        public IHttpActionResult GetFreeDriver(string id)
+        {
+            if (!GetLoggedUsers.Contains(id))
+                return Unauthorized();
+
+            Korisnik k = db.Korisnici.Find(id);
+            if (k == null)
+                return NotFound();
+
+            if (k.Uloga != EUloga.DISPECER)
+                return Unauthorized();
+
+            List<Korisnik> vozaci = db.Korisnici.Include(kor => kor.Voznje).ToList().Where(a => a.Uloga == EUloga.VOZAC).ToList();
+
+            List<Korisnik> slobodniVozaci = vozaci.Where(kor => kor.Voznje.Count == 0 || kor.Voznje.Any(voznja => voznja.StatusVoznje != EStatus.UTOKU)).ToList();
+
+            return Ok(slobodniVozaci);
+        }
+
 
         // DELETE: api/Korisnici/5
         [ResponseType(typeof(Korisnik))]

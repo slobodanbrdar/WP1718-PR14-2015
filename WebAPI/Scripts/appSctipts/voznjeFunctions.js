@@ -116,7 +116,7 @@ function getTip(num) {
 
 function getStatus(num) {
     if (num == 1) {
-        return "Kreirana";
+        return "Kreirana - Na cekanju";
     }
     else if (num == 2) {
         return "Otkazana";
@@ -142,7 +142,102 @@ function getStatus(num) {
 }
 
 function dodajVoznjuDispecerScript() {
-    $.ajax({
+   
+}
 
+function selectSlobodneVozace(data) {
+    var content = "<tr><td>Izaberite slobodnog vozaca </td>";
+    content += "<td> <select name='vozacid'>";
+    $.each(data, function (i, val) {
+        content += "<option value='" + val.KorisnikID + "'> " + val.KorisnikID + "</option>";
+    });
+    content += "</td> </tr>";
+    
+    return content;
+}
+
+function doVoznjaDispecer() {
+    $("input[name='xkoordinata']").val($("input[name='lokacija_xkoordinata']").val());
+    $("input[name='ykoordinata']").val($("input[name='lokacija_ykoordinata']").val());
+    $("input[name='voznjaId']").val(moment().format('MMMM Do YYYY, h:mm:ss a'));
+    $("input[name='dispecerId']").val(localStorage.getItem('ulogovan'));
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        data: $("form#voznjaDispecer").serialize(),
+        url: "api/Lokacije/",
+        success: function (data) {
+            $.ajax({
+                type: "POST",
+                data: $("form#voznjaDispecer").serialize(),
+                url: "api/voznje/",
+                dataType: "json",
+                success: function () {
+                    loadHomepage();
+                },
+                error: function (jqXHR) {
+                    if (jqXHR.status != 406) {
+                        alert(jqXHR.statusText);
+                        loadHomepage();
+                    }
+                    else {
+                        alert("Vozac ne poseduje zeljeni tip automobila");
+                    }
+                    
+                }
+            })
+        },
+        error: function (jqXHR) {
+            let x = $("input[name='xkoordinata']").val();
+            let y = $("input[name='ykoordinata']").val();
+            $.ajax({
+                type: "PUT",
+                data: $("form#voznjaDispecer").serialize(),
+                url: "api/lokacije/" + x + y,
+                dataType: "json",
+                success: function () {
+                    $.ajax({
+                        type: "POST",
+                        data: $("form#voznjaDispecer").serialize(),
+                        url: "api/voznje/",
+                        dataType: "json",
+                        success: function () {
+                            loadHomepage();
+                        },
+                        error: function (jqXHR) {
+                            alert(jqXHR.statusText);
+                            loadHomepage();
+                        }
+                    })
+                },
+                error: function (jqXHR) {
+                    alert(jqXHR.statusText);
+                    loadHomepage();
+                }
+            })
+        }
     });
 }
+
+function validateVoznjaDispecer() {
+    $("form#voznjaDispecer").validate({
+        rules: {
+            lokacija_xkoordinata: {
+                required: true
+            },
+            lokacija_ykoordinata: {
+                required: true
+            }
+        },
+        messages: {
+            lokacija_xkoordinata: {
+                required: "Morate uneti ovo polje"
+            },
+            lokacija_ykoordinata: {
+                required: "Morate uneti ovo polje"
+            }
+        },
+        submitHandler: function (form) { doVoznjaDispecer() }
+    });
+} 
