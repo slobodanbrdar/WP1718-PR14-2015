@@ -166,9 +166,10 @@ namespace WebAPI.Controllers
             if (k.Uloga != EUloga.VOZAC)
                 return Unauthorized();
 
-            if (k.Voznje.Any(voznja => voznja.StatusVoznje == EStatus.UTOKU))
+            List<Voznja> korisnikoveVoznje = db.Voznjas.Where(a => a.VozacID == prom.SenderID).ToList();
+            if (korisnikoveVoznje.Any(voznja => voznja.StatusVoznje == EStatus.UTOKU))
             {
-                return Content(HttpStatusCode.NotAcceptable, "Vec ste zaduzeni za voznju");
+                return Content(HttpStatusCode.NotAcceptable, "Imate voznju u toku");
             }
 
             Voznja ciljanaVoznja = db.Voznjas.Find(prom.VoznjaID);
@@ -182,6 +183,7 @@ namespace WebAPI.Controllers
                 return Content(HttpStatusCode.NotAcceptable, "Nemate trazeni tip vozila");
 
             ciljanaVoznja.StatusVoznje = EStatus.PRIHVACENA;
+            ciljanaVoznja.StatusVoznje = EStatus.UTOKU;
             ciljanaVoznja.VozacID = k.KorisnikID;
 
             ciljanaVoznja.Odrediste_XKoordinata = null;
@@ -206,6 +208,48 @@ namespace WebAPI.Controllers
             }
             return Ok(ciljanaVoznja);
 
+        }
+
+        [HttpPut]
+        [Route("api/Voznje/OdbaciVoznju")]
+        public IHttpActionResult OdbaciVoznju(PromenaVoznjeModel prom)
+        {
+            if (!GetLoggedUsers.Contains(prom.SenderID))
+                return Unauthorized();
+
+            Korisnik k = kor.Korisnici.Include(voz => voz.Voznje).ToList().Find(korisnik => korisnik.KorisnikID == prom.SenderID);
+            if (k.Uloga != EUloga.VOZAC)
+                return Unauthorized();
+
+            Voznja ciljanaVoznja = db.Voznjas.Find(prom.VoznjaID);
+            if (ciljanaVoznja == null)
+                return NotFound();
+
+            if (ciljanaVoznja.StatusVoznje != EStatus.FORMIRANA && ciljanaVoznja.StatusVoznje != EStatus.OBRADJENA && ciljanaVoznja.StatusVoznje != EStatus.PRIHVACENA && ciljanaVoznja.StatusVoznje != EStatus.UTOKU)
+                return Content(HttpStatusCode.NotAcceptable, "Voznja je u medjuvremenu promenila status");
+
+            ciljanaVoznja.StatusVoznje = EStatus.NEUSPESNA;
+            ciljanaVoznja.Odrediste_XKoordinata = null;
+            ciljanaVoznja.Odrediste_YKoordinata = null;
+
+            db.Entry(ciljanaVoznja).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VoznjaExists(ciljanaVoznja.VoznjaID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return Ok(ciljanaVoznja);
         }
 
         // POST: api/Voznje
