@@ -28,17 +28,35 @@ namespace WebAPI.Controllers
             }
         }
 
-        // GET: api/Voznje
-        public IQueryable<Voznja> GetVoznjas()
+        [HttpGet]
+        [Route("api/Voznje/GetAllVoznje")]
+        public IHttpActionResult GetVoznjas([FromUri]String id)
         {
-            return db.Voznjas;
+            if (!GetLoggedUsers.Contains(id))
+            {
+                return Unauthorized();
+            }
+            Korisnik k = kor.Korisnici.Find(id);
+            if (k == null)
+            {
+                return NotFound();
+            }
+
+            if (k.Uloga != EUloga.DISPECER)
+            {
+                return Unauthorized();
+            }
+
+
+            return Ok(db.Voznjas.ToList());
         }
 
         // GET: api/Voznje/5
         [ResponseType(typeof(Voznja))]
-        public IHttpActionResult GetVoznja(string id)
+        [HttpGet, Route("api/Voznje/GetVoznja")]
+        public IHttpActionResult GetVoznja([FromUri]string id)
         {
-            Voznja voznja = db.Voznjas.Find(id);
+            Voznja voznja = db.Voznjas.Include(lok => lok.Lokacija).ToList().Find(i => i.VoznjaID == id);
             if (voznja == null)
             {
                 return NotFound();
@@ -49,19 +67,28 @@ namespace WebAPI.Controllers
 
         // PUT: api/Voznje/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutVoznja(string id, Voznja voznja)
+        public IHttpActionResult PutVoznja(Voznja voznja)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != voznja.VoznjaID)
+            Voznja v = db.Voznjas.Find(voznja.VoznjaID);
+            if (v == null )
             {
-                return BadRequest();
+                return NotFound();
             }
+            if (v.StatusVoznje != EStatus.KREIRANA)
+                return Content(HttpStatusCode.NotAcceptable, "Voznja je u medjuvremenu promenila stanje");
 
-            db.Entry(voznja).State = EntityState.Modified;
+            v.Lokacija_XKoordinata = voznja.Lokacija_XKoordinata;
+            v.Lokacija_YKoordinata = voznja.Lokacija_YKoordinata;
+            v.ZeljeniTip = voznja.ZeljeniTip;
+            v.Odrediste_XKoordinata = null;
+
+
+            db.Entry(v).State = EntityState.Modified;
 
             try
             {
@@ -69,7 +96,7 @@ namespace WebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VoznjaExists(id))
+                if (!VoznjaExists(voznja.VoznjaID))
                 {
                     return NotFound();
                 }
@@ -103,7 +130,7 @@ namespace WebAPI.Controllers
                 return NotFound();
 
             if (v.StatusVoznje != EStatus.KREIRANA)
-                return Content(HttpStatusCode.NotAcceptable, "Ne mozete otkazati ovu voznju");
+                return Content(HttpStatusCode.NotAcceptable, "Voznja je u medjuvremenu promenila stanje");
 
             v.StatusVoznje = EStatus.OTKAZANA;
             v.Odrediste_XKoordinata = null;

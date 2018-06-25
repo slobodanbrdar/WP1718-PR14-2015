@@ -25,10 +25,10 @@ namespace WebAPI.Controllers
 
         // GET: api/Lokacije/5
         [ResponseType(typeof(Lokacija))]
-        [Route("api/Lokacija/{x}_{y}")]
-        public IHttpActionResult GetLokacija(string x, string y)
+        [Route("api/Lokacija")]
+        public IHttpActionResult GetLokacija([FromBody]String id)
         {
-            Lokacija lokacija = db.Lokacije.Find(x);
+            Lokacija lokacija = db.Lokacije.Find(id);
             if (lokacija == null)
             {
                 return NotFound();
@@ -39,19 +39,26 @@ namespace WebAPI.Controllers
 
         // PUT: api/Lokacije/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutLokacija(string id, Lokacija lokacija)
+        [HttpPut, Route("api/Lokacije/PutLokacija")]
+        public IHttpActionResult PutLokacija(Lokacija lokacija)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != lokacija.LokacijaKey)
+            Lokacija l = db.Lokacije.Find(lokacija.LokacijaKey);
+            
+            if (l == null)
             {
-                return BadRequest();
+                return NotFound();
             }
+            l.Mesto = lokacija.Mesto;
+            l.Ulica = lokacija.Ulica;
+            l.Broj = lokacija.Broj;
+            l.PozivniBroj = lokacija.PozivniBroj;
 
-            db.Entry(lokacija).State = EntityState.Modified;
+            db.Entry(l).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +66,7 @@ namespace WebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LokacijaExists(id))
+                if (!LokacijaExists(lokacija.LokacijaKey))
                 {
                     return NotFound();
                 }
@@ -74,6 +81,7 @@ namespace WebAPI.Controllers
 
         // POST: api/Lokacije
         [ResponseType(typeof(Lokacija))]
+        [HttpPost]
         public IHttpActionResult PostLokacija(Lokacija lokacija)
         {
             if (!ModelState.IsValid)
@@ -89,7 +97,7 @@ namespace WebAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (LokacijaExists(lokacija.XKoordinata))
+                if (LokacijaExists(lokacija.LokacijaKey))
                 {
                     return Conflict();
                 }
@@ -99,7 +107,7 @@ namespace WebAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = lokacija.XKoordinata }, lokacija);
+            return CreatedAtRoute("DefaultApi", new { id = lokacija.LokacijaKey }, lokacija);
         }
 
         // DELETE: api/Lokacije/5
@@ -129,7 +137,7 @@ namespace WebAPI.Controllers
 
         private bool LokacijaExists(string id)
         {
-            return db.Lokacije.Count(e => e.XKoordinata == id) > 0;
+            return db.Lokacije.Count(e => e.LokacijaKey == id) > 0;
         }
     }
 }

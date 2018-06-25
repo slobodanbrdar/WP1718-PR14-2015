@@ -87,12 +87,25 @@ namespace WebAPI.Controllers
             return Ok();
         }
 
-        //[HttpGet]
-        //[Route("api/Korisnici/DispecerskeVoznje/{id}")]
-        //public IHttpActionResult GetDispecerDrives (String id)
-        //{
+        [HttpGet]
+        [Route("api/Korisnici/DispecerskeVoznje")]
+        public IHttpActionResult GetDispecerDrives([FromUri]String id)
+        {
+            if (!GetLoggedUsers.Contains(id))
+                return Unauthorized();
 
-        //}
+            Korisnik k = db.Korisnici.Find(id);
+            if (k == null)
+            {
+                return NotFound();
+            }
+
+            if (k.Uloga != EUloga.DISPECER)
+                return Unauthorized();
+
+            List<Voznja> retVoznje = voznje.Voznjas.Include(kom => kom.KomentarVoznje).Where(i => i.DispecerID == id).ToList();
+            return Ok(retVoznje);
+        }
 
         [HttpGet]
         [Route ("api/Korisnici/KorisnickeVoznje")]

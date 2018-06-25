@@ -37,7 +37,7 @@ function doVoznjaMusterija() {
                 $.ajax({
                     type: "PUT",
                     data: $("form#voznjaMusterija").serialize(),
-                    url: "api/lokacije/" + x + y,
+                    url: "api/lokacije/PutLokacija",
                     dataType: "json",
                     success: function () {
                         $.ajax({
@@ -63,6 +63,90 @@ function doVoznjaMusterija() {
         }
         
     })
+}
+
+function doVoznjaIzmenaVoznje() {
+    $("input[name='xkoordinata']").val($("input[name='lokacija_xkoordinata']").val());
+    $("input[name='ykoordinata']").val($("input[name='lokacija_ykoordinata']").val());
+    $.ajax({
+        type: "POST",
+        data: $("form#izmenaVoznje").serialize(),
+        url: "api/lokacije/",
+        dataType: "json",
+        success: function (data) {
+            $.ajax({
+                type: "PUT",
+                data: $("form#izmenaVoznje").serialize(),
+                url: "api/voznje",
+                dataType: "json",
+                success: function () {
+                    loadHomepage();
+                },
+                error: function (jqXHR) {
+                    alert(jqXHR.statusText);
+                    loadHomepage();
+                }
+            })
+        },
+        error: function (jqXHR) {
+            if (jqXHR.status != 409) {
+                alert(jqXHR.statusText)
+                loadHomepage();
+            }
+            else {
+                let x = $("input[name='xkoordinata']").val();
+                let y = $("input[name='ykoordinata']").val();
+                $.ajax({
+                    type: "PUT",
+                    data: $("form#izmenaVoznje").serialize(),
+                    url: "api/lokacije/PutLokacija",
+                    dataType: "json",
+                    success: function () {
+                        $.ajax({
+                            type: "PUT",
+                            data: $("form#izmenaVoznje").serialize(),
+                            url: "api/voznje/",
+                            dataType: "json",
+                            success: function () {
+                                loadHomepage();
+                            },
+                            error: function (jqXHR) {
+                                alert(jqXHR.statusText);
+                                loadHomepage();
+                            }
+                        })
+                    },
+                    error: function (jqXHR) {
+                        alert(jqXHR.statusText);
+                        loadHomepage();
+                    }
+                })
+            }
+        }
+
+    })
+}
+
+function validateIzmenaVoznje() {
+    $("form#izmenaVoznje").validate({
+        rules: {
+            lokacija_xkoordinata: {
+                required: true
+            },
+            lokacija_ykoordinata: {
+                required: true
+            }
+        },
+        messages: {
+            lokacija_xkoordinata: {
+                required: "Morate uneti ovo polje"
+            },
+            lokacija_ykoordinata: {
+                required: "Morate uneti ovo polje"
+            }
+        },
+        submitHandler: function (form) { doVoznjaIzmenaVoznje() }
+    });
 }
 
 function validateVoznjaMusterija() {
@@ -137,7 +221,8 @@ function ispisiTabeluVoznji(data) {
                 "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
                 "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td>";
             if (val.StatusVoznje == 1) {
-                content += "<td><a href='' id='otkazivoznju'> Otkazi voznju </a> <td></tr>"
+                content += "<td><a href='' id='otkazivoznju'> Otkazi voznju </a> </td>";
+                content += "<td><a href='' id='izmenivoznju'> Izmeni voznju </a> </td></tr>";
             }
             else {
                 content += "</tr>"
@@ -146,55 +231,111 @@ function ispisiTabeluVoznji(data) {
 
         content += "</table>";
     }
-
+    
 
     $("div#regdiv").html(content);
     $("div#regdiv").show();
+    $("a#izmenivoznju").bind('click', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        var xKoordinata = $(this).parent().siblings().eq(1).text();
+        var yKoordinata = $(this).parent().siblings().eq(2).text();
+        var idVoznje = $(this).parent().siblings().eq(0).text();
+        $.ajax({
+            type: "GET",
+            data: { id: idVoznje },
+            dataType: "json",
+            url: "api/Voznje/GetVoznja",
+            success: function (data) {
+                if (data.StatusVoznje != 1) {
+                    alert("Voznja je u medjuvremenu promenila stanje, te se ne moze izmeniti");
+                    loadHomepage();
+                }
+                else {
+                    $("div#regdiv").load("./Content/partials/izmeniVoznju.html", function () {
+                        $("input[name='musterijaId']").val(localStorage.getItem('ulogovan'));
+                        $("input[name='lokacija_xkoordinata']").val(data.Lokacija_XKoordinata);
+                        $("input[name='lokacija_ykoordinata']").val(data.Lokacija_YKoordinata);
+                        $("input[name='xkoordinata']").val(data.Lokacija_xKoordinata);
+                        $("input[name='ykoordinata']").val(data.Lokacija_YKoordinata);
+                        $("input[name='ulica']").val(data.Lokacija.Ulica);
+                        $("input[name='broj']").val(data.Lokacija.Broj);
+                        $("input[name='mesto']").val(data.Lokacija.Mesto);
+                        $("input[name='pozivnibroj']").val(data.Lokacija.PozivniBroj);
+                        $("input[name='statusvoznje']").val(data.StatusVoznje);
+                        $("input[name='voznjaId']").val(data.VoznjaID);
+                        $("select[name='zeljenitip']").val(data.Zeljenitip);
+
+                        validateIzmenaVoznje();
+                    });
+                }
+                
+            }
+        })
+
+        
+    });
     $("a#otkazivoznju").bind('click', function (e) {
         e.stopImmediatePropagation();
         e.preventDefault();
 
+        var idVoznje = $(this).parent().siblings().eq(0).text();
         var datumZakazivanja = $(this).parent().siblings().eq(0).text();
         var korisnikID = localStorage.getItem('ulogovan');
         var status = 2;
-       
         $.ajax({
-            type: "POST",
+            type: "GET",
+            data: { id: idVoznje },
             dataType: "json",
-            data: {
-                "SenderID": localStorage.getItem("ulogovan"),
-                "VoznjaID": datumZakazivanja
-            },
-            url: "api/Voznje/OtkaziVoznju",
-            success: function () {
-                
-                $("div#regdiv").load("./Content/partials/komentarOtkazana.html", function () {
-                    $("input[name='kometarID']").val(moment().format('MMMM Do YYYY, h:mm:ss a'));
-                    $("input[name='vlasnikKomentara']").val(localStorage.getItem('ulogovan'));
-                    $("input[name='komentarisanaVoznja']").val(datumZakazivanja);
-                    doOtkazVoznja();
-                });
-            }, 
-            error: function (jqXHR) {
-                alert(jqXHR.statusText);
-                $.ajax({
-                    type: "GET",
-                    url: "api/korisnici/KorisnickeVoznje",
-                    data: { id: localStorage.getItem('ulogovan')},
-                    dataType: "json",
-                    success: function (data) {
-                        ispisiTabeluVoznji(data);
+            url: "api/Voznje/GetVoznja",
+            success: function (data) {
+                if (data.StatusVoznje != 1) {
+                    alert("Status voznje se u medjuvremenu promenio, te se ova voznja ne moze otkazati");
+                    loadHomepage();
+                }
+                else {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            "SenderID": localStorage.getItem("ulogovan"),
+                            "VoznjaID": datumZakazivanja
+                        },
+                        url: "api/Voznje/OtkaziVoznju",
+                        success: function () {
 
-                    },
-                    error: function (jqXHR) {
-                        alert(jqXHR.statusText);
-                        if (jqXHR.status != 406) {
-                            loadHomepage();
+                            $("div#regdiv").load("./Content/partials/komentarOtkazana.html", function () {
+                                $("input[name='kometarID']").val(moment().format('MMMM Do YYYY, h:mm:ss a'));
+                                $("input[name='vlasnikKomentara']").val(localStorage.getItem('ulogovan'));
+                                $("input[name='komentarisanaVoznja']").val(datumZakazivanja);
+                                doOtkazVoznja();
+                            });
+                        },
+                        error: function (jqXHR) {
+                            alert(jqXHR.statusText);
+                            $.ajax({
+                                type: "GET",
+                                url: "api/korisnici/KorisnickeVoznje",
+                                data: { id: localStorage.getItem('ulogovan') },
+                                dataType: "json",
+                                success: function (data) {
+                                    ispisiTabeluVoznji(data);
+
+                                },
+                                error: function (jqXHR) {
+                                    alert(jqXHR.statusText);
+                                    if (jqXHR.status != 406) {
+                                        loadHomepage();
+                                    }
+                                }
+                            });
                         }
-                    }
-                });
+                    })
+                }
             }
         })
+       
+        
     }) 
 }
 

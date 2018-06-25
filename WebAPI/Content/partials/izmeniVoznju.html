@@ -1,0 +1,78 @@
+﻿<form action="#" method="put" id="izmenaVoznje">
+    <table>
+        <tr>
+            <th colspan="3" align="center">
+                Izmena voznje
+            </th>
+        </tr>
+        <tr>
+            <td>
+                XKoordinata
+            </td>
+            <td>
+                <input type="number" name="lokacija_xkoordinata" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                YKoordinata
+            </td>
+            <td>
+                <input type="number" name="lokacija_ykoordinata" />
+            </td>
+        </tr>
+        <tr>
+            <td>Ulica</td>
+            <td>
+                <input type="text" name="ulica" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Broj
+            </td>
+            <td>
+                <input type="number" name="broj" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Mesto
+            </td>
+            <td>
+                <input type="text" name="mesto" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Pozivni broj
+            </td>
+            <td>
+                <input type="number" name="pozivnibroj" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Zeljeni tip automobila
+            </td>
+            <td>
+                <select name="zeljenitip">
+                    <option value="0"></option>
+                    <option value="1">
+                        Putnicki
+                    </option>
+                    <option value="2">
+                        Kombi
+                    </option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" name="statusvoznje" value="1" />
+    <input type="hidden" name="voznjaId" />
+    <input type="hidden" name="xkoordinata" />
+    <input type="hidden" name="ykoordinata" />
+    <input type="hidden" name="musterijaId" />
+    <input type="submit" value="Izmeni voznju" />
+</form>
+
