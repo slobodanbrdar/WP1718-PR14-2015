@@ -46,12 +46,11 @@ namespace WebAPI.Controllers
             {
                 return Unauthorized();
             }
+            List<Voznja> voznje = db.Voznjas.ToList();
 
-
-            return Ok(db.Voznjas.ToList());
+            return Ok(db.Voznjas.Include(koment => koment.KomentarVoznje));
         }
 
-        // GET: api/Voznje/5
         [ResponseType(typeof(Voznja))]
         [HttpGet, Route("api/Voznje/GetVoznja")]
         public IHttpActionResult GetVoznja([FromUri]string id)

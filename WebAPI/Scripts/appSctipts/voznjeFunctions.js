@@ -207,6 +207,28 @@ function ispisiKorisnickoIme(par) {
     }
 }
 
+function isipisTabeluVoznjiDispecer(data) {
+    if (data.length == 0) {
+        var content = "<p> Jos niste zakazivali voznje <p>"
+    }
+    else {
+        var content = '<table border="2"> <tr> <td colspan="11" align="center">Moje voznje</td>';
+        content += "<tr><td>Datum zakazivanja</td> <td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
+                <td>Zeljeni tip</td><td>Iznos</td><td>Status voznje</td><td>Komentar</td> <td>Ocena</td> <td>Datum objave</td> <td>Korisnicko ime</td></tr > ";
+        $.each(data, function (i, val) {
+            content += "<tr> <td>" + val.VoznjaID + "</td> <td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
+                val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
+                "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
+                "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td></tr>";
+        });
+
+        content += "</table>";
+    }
+    $("div#regdiv").html(content);
+    $("div#regdiv").show();
+
+}
+
 function ispisiTabeluVoznji(data) {
     if (data.length == 0) {
         var content = "<p> Jos niste zakazivali voznje <p>"
@@ -482,7 +504,7 @@ function doVoznjaDispecer() {
             $.ajax({
                 type: "PUT",
                 data: $("form#voznjaDispecer").serialize(),
-                url: "api/lokacije/" + x + y,
+                url: "api/lokacije/PutLokacija",
                 dataType: "json",
                 success: function () {
                     $.ajax({
