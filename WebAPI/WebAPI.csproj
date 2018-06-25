@@ -186,7 +186,7 @@
     <Compile Include="Models\Komentar.cs" />
     <Compile Include="Models\Korisnik.cs" />
     <Compile Include="Models\Lokacija.cs" />
-    <Compile Include="Models\OtkazivanjeModel.cs" />
+    <Compile Include="Models\PromenaVoznjeModel.cs" />
     <Compile Include="Models\PrijavaModel.cs" />
     <Compile Include="Models\VozacRegistrationModel.cs" />
     <Compile Include="Models\Voznja.cs" />

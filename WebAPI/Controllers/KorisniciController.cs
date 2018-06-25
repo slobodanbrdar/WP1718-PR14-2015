@@ -128,6 +128,43 @@ namespace WebAPI.Controllers
             return Ok(retVoznje);
         }
 
+        [HttpGet]
+        [Route("api/Korisnici/GetKreiraneVoznje")]
+        public IHttpActionResult GetKreiraneVoznje([FromUri]String id)
+        {
+            Korisnik kor = db.Korisnici.Include(korisnik => korisnik.Voznje).ToList().Find(k => k.KorisnikID == id);
+            if (kor == null)
+                return NotFound();
+
+            if (!GetLoggedUsers.Contains(id))
+                return Unauthorized();
+
+            if (kor.Uloga == EUloga.MUSTERIJA)
+                return Unauthorized();
+
+            List<Voznja> retVoznje = voznje.Voznjas.Include(kom => kom.KomentarVoznje).Where(i => i.StatusVoznje == EStatus.KREIRANA).ToList();
+            return Ok(retVoznje);
+        }
+
+        [HttpGet]
+        [Route("api/Korisnici/VozaceveVoznje")]
+        public IHttpActionResult GetDriversDrives([FromUri]String id)
+        {
+            Korisnik kor = db.Korisnici.Include(korisnik => korisnik.Voznje).ToList().Find(k => k.KorisnikID == id);
+            if (kor == null)
+                return NotFound();
+
+            if (!GetLoggedUsers.Contains(id))
+                return Unauthorized();
+
+            if (kor.Uloga == EUloga.MUSTERIJA)
+                return Unauthorized();
+
+            List<Voznja> retVoznje = voznje.Voznjas.Include(kom => kom.KomentarVoznje).Where(i => i.VozacID == id).ToList();
+
+            return Ok(retVoznje);
+        }
+
         // PUT: api/Korisnici/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutKorisnik(string id, Korisnik korisnik)

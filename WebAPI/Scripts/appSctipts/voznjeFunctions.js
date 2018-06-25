@@ -207,16 +207,112 @@ function ispisiKorisnickoIme(par) {
     }
 }
 
+function getUserId(val) {
+    if (val.MusterijaID == null) {
+        return "Musterija nije zakazala voznju";
+    } else {
+        return val.MusterijaID;
+    }
+}
+
+function getDispId(val) {
+    if (val.DispecerID == null) {
+        return "Dispecer nije zakazao voznju";
+    }
+    else {
+        return val.DispecerID;
+    }
+}
+function ispisiKreiraneVoznje(data) {
+    if (data.length == 0) {
+        var content = "<p> Nema kreiranih voznji <p>"
+    }
+    else {
+        var content = '<table border="2"> <tr> <td colspan="11" align="center">Moje voznje</td>';
+        content += "<tr><td>Datum zakazivanja</td><td>Musterija</td><td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
+                <td>Zeljeni tip</td><td>Status voznje </td></tr > ";
+        $.each(data, function (i, val) {
+            content += "<tr> <td>" + val.VoznjaID + "</td><td>" + getUserId(val) + "</td><td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
+                val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
+                "</td><td>" + getStatus(val.StatusVoznje) + "</td>";
+            content += "<td><a href='' id='preuzmivoznju'>Preuzmi voznju</a></td></tr>";
+        });
+        content += "</table>";
+    }
+
+
+    $("div#regdiv").html(content);
+    $("div#regdiv").show();
+
+    $("a#preuzmivoznju").bind('click', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        var idVoznje = $(this).parent().siblings().eq(0).text();
+        $.ajax({
+            type: "PUT",
+            dataType: "json",
+            data: {
+                "SenderID": localStorage.getItem("ulogovan"),
+                "VoznjaID": idVoznje
+            },
+            url: "api/Voznje/PreuzmiVoznju",
+            success: function () {
+                alert("Uspesno ste preuzeli voznju");
+                loadHomepage();
+            },
+            error: function (jqXHR, status) {
+                if (jqXHR.status == 406) {
+                    alert(jqXHR.responseJSON);
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        data: { id: localStorage.getItem('ulogovan') },
+                        url: "api/Korisnici/GetKreiraneVoznje",
+                        success: function (data) {
+                            ispisiKreiraneVoznje(data);
+                        },
+                        error: function (jqXHR) {
+                            alert(jqXHR.statusText);
+                        }
+                    });
+                } else {
+                    alert(jqXHR.statusText);
+                }
+            }
+        })
+    });
+}
+function ispisiTabeluVoznjiVozac(data) {
+    if (data.length == 0) {
+        var content = "<p> Nema zakazanih voznji na vase ime <p>"
+    }
+    else {
+        var content = '<table border="2"> <tr> <td colspan="11" align="center">Moje voznje</td>';
+        content += "<tr><td>Datum zakazivanja</td><td>Musterija</td><td>Dispecer</td><td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
+                <td>Zeljeni tip</td><td>Iznos</td><td>Status voznje</td><td>Komentar</td> <td>Ocena</td> <td>Datum objave</td> <td>Korisnicko ime</td></tr > ";
+        $.each(data, function (i, val) {
+            content += "<tr> <td>" + val.VoznjaID + "</td><td>"+ getUserId(val) +"</td><td>"+getDispId(val)+"</td><td>"+ val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
+                val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
+                "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
+                "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td></tr>";
+        });
+
+        content += "</table>";
+    }
+    $("div#regdiv").html(content);
+    $("div#regdiv").show();
+}
+
 function isipisTabeluVoznjiDispecer(data) {
     if (data.length == 0) {
         var content = "<p> Jos niste zakazivali voznje <p>"
     }
     else {
         var content = '<table border="2"> <tr> <td colspan="11" align="center">Moje voznje</td>';
-        content += "<tr><td>Datum zakazivanja</td> <td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
+        content += "<tr><td>Datum zakazivanja</td><td>Vozac</td> <td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
                 <td>Zeljeni tip</td><td>Iznos</td><td>Status voznje</td><td>Komentar</td> <td>Ocena</td> <td>Datum objave</td> <td>Korisnicko ime</td></tr > ";
         $.each(data, function (i, val) {
-            content += "<tr> <td>" + val.VoznjaID + "</td> <td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
+            content += "<tr> <td>" + val.VoznjaID + "</td><td>" + getDriverId(val) + "</td><td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
                 val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
                 "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
                 "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td></tr>";
@@ -229,16 +325,25 @@ function isipisTabeluVoznjiDispecer(data) {
 
 }
 
+function getDriverId(val) {
+    if (val.VozacID == null) {
+        return "Nijedan vozac nije preuzeo voznju";
+    }
+    else {
+        return val.VozacID;
+    }
+}
+
 function ispisiTabeluVoznji(data) {
     if (data.length == 0) {
         var content = "<p> Jos niste zakazivali voznje <p>"
     }
     else {
         var content = '<table border="2"> <tr> <td colspan="11" align="center">Moje voznje</td>';
-        content += "<tr><td>Datum zakazivanja</td> <td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
+        content += "<tr><td>Datum zakazivanja</td><td>Vozac</td><td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
                 <td>Zeljeni tip</td><td>Iznos</td><td>Status voznje</td><td>Komentar</td> <td>Ocena</td> <td>Datum objave</td> <td>Korisnicko ime</td></tr > ";
         $.each(data, function (i, val) {
-            content += "<tr> <td>" + val.VoznjaID + "</td> <td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
+            content += "<tr> <td>" + val.VoznjaID + "</td> <td>" + getDriverId(val)+ "</td> <td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
                 val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
                 "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
                 "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td>";
@@ -317,7 +422,7 @@ function ispisiTabeluVoznji(data) {
                 }
                 else {
                     $.ajax({
-                        type: "POST",
+                        type: "PUT",
                         dataType: "json",
                         data: {
                             "SenderID": localStorage.getItem("ulogovan"),

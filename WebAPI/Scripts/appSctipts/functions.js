@@ -1,6 +1,4 @@
-﻿
-
-//======================Load pages=========================
+﻿//======================Load pages=========================
 function loadHomepage() {
     //$("a#prikazisvevoznje").hide();
     $.ajax({
@@ -86,7 +84,7 @@ function loadHomepage() {
                                     url: "api/Voznje/GetAllVoznje",
                                     data: { id: localStorage.getItem('ulogovan') },
                                     success: function (data) {
-                                        ispisiTabeluVoznji(data);
+                                        isipisTabeluVoznjiDispecer(data);
                                     },
                                     error: function (jqXHR) {
                                         alert(jqXHR.statusText);
@@ -100,9 +98,39 @@ function loadHomepage() {
                     });
 
                 }
+                
             }
             
-
+            if (data.Uloga == 3) {
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "api/Korisnici/VozaceveVoznje",
+                    data: { id: localStorage.getItem('ulogovan') },
+                    success: function (data) {
+                        ispisiTabeluVoznjiVozac(data);
+                        $("a#kreiranevoznje").show();
+                        $("a#kreiranevoznje").bind('click', function (e) {
+                            e.preventDefault();
+                            $.ajax({
+                                type: "GET",
+                                dataType: "json",
+                                data: { id: localStorage.getItem('ulogovan') },
+                                url: "api/Korisnici/GetKreiraneVoznje",
+                                success: function (data) {
+                                    ispisiKreiraneVoznje(data);
+                                },
+                                error: function (jqXHR) {
+                                    alert(jqXHR.statusText);
+                                }
+                            });
+                        });
+                    },
+                    error: function (jqXHR) {
+                        alert(jqXHR.statusText);
+                    }
+                });
+            }
             $("#promena").show();
             $("#promena").bind('click', function () {
                 $("div#welcomediv").hide();

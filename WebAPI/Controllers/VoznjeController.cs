@@ -108,9 +108,9 @@ namespace WebAPI.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("api/Voznje/OtkaziVoznju")]
-        public IHttpActionResult OktaziVoznju (OtkazivanjeModel otkazivanje)
+        public IHttpActionResult OktaziVoznju (PromenaVoznjeModel otkazivanje)
         {
             if (!GetLoggedUsers.Contains(otkazivanje.SenderID))
             {
@@ -154,7 +154,59 @@ namespace WebAPI.Controllers
             }
             return Ok(v);
         }
-        
+
+        [HttpPut]
+        [Route ("api/Voznje/PreuzmiVoznju")]
+        public IHttpActionResult PreuzmiVoznju(PromenaVoznjeModel prom)
+        {
+            if (!GetLoggedUsers.Contains(prom.SenderID))
+                return Unauthorized();
+
+            Korisnik k = kor.Korisnici.Include(voz => voz.Voznje).ToList().Find(korisnik => korisnik.KorisnikID == prom.SenderID);
+            if (k.Uloga != EUloga.VOZAC)
+                return Unauthorized();
+
+            if (k.Voznje.Any(voznja => voznja.StatusVoznje == EStatus.UTOKU))
+            {
+                return Content(HttpStatusCode.NotAcceptable, "Vec ste zaduzeni za voznju");
+            }
+
+            Voznja ciljanaVoznja = db.Voznjas.Find(prom.VoznjaID);
+            if (ciljanaVoznja == null)
+                return NotFound();
+
+            if (ciljanaVoznja.StatusVoznje != EStatus.KREIRANA)
+                return Content(HttpStatusCode.NotAcceptable, "Voznja je u medjuvremenu promenila status");
+
+            if (ciljanaVoznja.ZeljeniTip != ETipAutomobila.PROIZVOLJNO && ciljanaVoznja.ZeljeniTip != k.ZeljeniTip)
+                return Content(HttpStatusCode.NotAcceptable, "Nemate trazeni tip vozila");
+
+            ciljanaVoznja.StatusVoznje = EStatus.PRIHVACENA;
+            ciljanaVoznja.VozacID = k.KorisnikID;
+
+            ciljanaVoznja.Odrediste_XKoordinata = null;
+            ciljanaVoznja.Odrediste_YKoordinata = null;
+
+            db.Entry(ciljanaVoznja).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VoznjaExists(ciljanaVoznja.VoznjaID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return Ok(ciljanaVoznja);
+
+        }
 
         // POST: api/Voznje
         [ResponseType(typeof(Voznja))]
