@@ -4,29 +4,35 @@
 function loadHomepage() {
     $.ajax({
         type: "GET",
-        url: "api/Korisnici/" + localStorage.getItem('ulogovan'),
+        url: "api/Korisnici",
+        data: { id: localStorage.getItem('ulogovan') },
         dataType: "json",
         success: function (data) {
-            $('div#regdiv').text("Dobrodosli " + data.KorisnikID);
+            $('div#welcomediv').text("Dobrodosli " + data.KorisnikID);
+            $('div#welcomediv').show();
+            $("div#regdiv").hide();
 
             if (data.Uloga == 1 || data.Uloga == 2) {
                 $("#dodajvoznju").show();
                 $("#dodajvoznju").bind('click', function (e) {
                     e.preventDefault();
+                    $("div#welcomediv").hide();
                     if (data.Uloga == 1) {
                         $("div#regdiv").load("./Content/partials/dodajVoznjuMusterija.html");
+                        $("div#regdiv").show();
                     }
                     else {
                         $.ajax({
                             type: "GET",
                             dataType: "json",
-                            url: "api/Korisnici/GetFreeDrivers/" + localStorage.getItem('ulogovan'),
+                            url: "api/Korisnici/GetFreeDrivers",
+                            data: { id: localStorage.getItem('ulogovan') },
                             success: function (data) {
                                 if (data.length == 0) {
                                     alert("Nema slobodnih vozaca");
 
                                 } else {
-                                    console.log(data[0].KorisnikID);
+                                    $("div#regdiv").show();
                                     $("div#regdiv").load("./Content/partials/dodajVoznjuDispecer.html", function () {
                                         var content = selectSlobodneVozace(data);
                                         $("table#voznjaDispecerTabela").append(content);
@@ -44,37 +50,38 @@ function loadHomepage() {
                 });
 
                 if (data.Uloga == 1) {
-                    $("#prikazivoznje").show();
-                    $("#prikazivoznje").bind('click', function (e) {
-                        e.preventDefault();
-                        $.ajax({
-                            type: "GET",
-                            url: "api/korisnici/KorisnickeVoznje/" + localStorage.getItem('ulogovan'),
-                            dataType: "json",
-                            success: function (data) {
-                                ispisiTabeluVoznji(data);
-                                
+                    var jsonData = { id: localStorage.getItem('ulogovan') };
+                    var dataForSend = JSON.stringify(jsonData);
+                    $.ajax({
+                        type: "GET",
+                        url: "api/korisnici/KorisnickeVoznje",
+                        data: jsonData,
+                        dataType: "json",
+                        success: function (data) {
+                            ispisiTabeluVoznji(data);
 
-                            },
-                            error: function (jqXHR) {
-                                alert(jqXHR.statusText);
-                                loadHomepage();
 
-                            }
-                        });
-
-                        
+                        },
+                        error: function (jqXHR) {
+                            alert(jqXHR.statusText);
+                        }
                     });
+                }
+                else if (data.Uloga == 2) {
+
                 }
             }
 
             $("#promena").show();
             $("#promena").bind('click', function () {
+                $("div#welcomediv").hide();
                 $.ajax({
                     type: "GET",
-                    url: "api/Korisnici/GetPage/" + data.KorisnikID,
+                    url: "api/Korisnici/GetPage",
+                    data: { id: data.KorisnikID},
                     dataType: "json",
                     success: function (data) {
+                        $("div#regdiv").show();
                         $("div#regdiv").load(data);
                     },
                     error: function (jqHXR) {
@@ -91,6 +98,7 @@ function loadHomepage() {
             $("#odjava").text("Odjava");
             $("#reg").hide();
             $("#odjava").bind('click', function () {
+                
                 $.ajax({
                     type: "POST",
                     data: '=' + localStorage.getItem('ulogovan'),
@@ -109,6 +117,8 @@ function loadHomepage() {
                 
             });
             $("#dodajvozaca").bind('click', function () {
+                $("div#welcomediv").hide();
+                $("div#regdiv").show();
                 $("#regdiv").load("./Content/partials/addDriver.html");
                 return false;
             });
@@ -133,13 +143,17 @@ function loadHomepage() {
 
 
 function loadLogin() {
+    $("div#regdiv").show();
     $("div#regdiv").load("./Content/partials/login.html");
+    $("div#welcomediv").hide();
     $("#reg").bind('click', function () {
         if ($("#reg").text() == "Registracija") {
+            $("div#regdiv").show();
             $("#regdiv").load("./Content/partials/register.html");
             $("#reg").html("Prijava");
             $("#errdiv").hide();
         } else {
+            $("div#regdiv").show();
             $("#regdiv").load("./Content/partials/Login.html");
             $("#reg").html("Registracija");
             $("#errdiv").hide();
@@ -157,6 +171,7 @@ function doLogSubmit() {
     $.post('/api/korisnici/Prijava', $('form#logform').serialize(), "json")
         .done(function (data, status, xhr) {
             $("#reg").hide();
+            $("div#regdiv").hide();
             localStorage.setItem("ulogovan", data.KorisnikID);
             $("div#errdiv").hide();
             loadHomepage();
@@ -206,7 +221,8 @@ function doDriverRegistrationSubmit() {
 function doChangeSubmit() {
     $.ajax({
         type: "GET",
-        url: "api/Korisnici/" + localStorage.getItem('ulogovan'),
+        url: "api/Korisnici",
+        data: { id: localStorage.getItem('ulogovan')},
         dataType: "json",
         success: function (data) {
             if ($("input[name='uloga']").val() == 3) {
@@ -546,7 +562,8 @@ function validateChange() {
 function changeScript() {
     $.ajax({
         type: "GET",
-        url: "api/Korisnici/" + localStorage.getItem('ulogovan'),
+        url: "api/Korisnici",
+        data: { id: localStorage.getItem('ulogovan')},
         dataType: "json",
         success: function (data) {
             $('input[name="korisnikId"]').val(data.KorisnikID);

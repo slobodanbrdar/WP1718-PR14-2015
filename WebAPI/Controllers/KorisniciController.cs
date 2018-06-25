@@ -37,7 +37,8 @@ namespace WebAPI.Controllers
 
         // GET: api/Korisnici/5
         [ResponseType(typeof(Korisnik))]
-        public IHttpActionResult GetKorisnik(string id)
+        [HttpGet, Route("api/Korisnici")]
+        public IHttpActionResult GetKorisnik([FromUri]string id)
         {
             if (!GetLoggedUsers.Contains(id))
                 return Content(HttpStatusCode.Unauthorized, "Niste ulogovani");
@@ -52,8 +53,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/Korisnici/GetPage/{id}")]
-        public IHttpActionResult GetPage(string id)
+        [Route("api/Korisnici/GetPage")]
+        public IHttpActionResult GetPage([FromUri]string id)
         {
             if (!GetLoggedUsers.Contains(id))
                 return Content(HttpStatusCode.Unauthorized, "Niste prijvaljeni");
@@ -86,9 +87,16 @@ namespace WebAPI.Controllers
             return Ok();
         }
 
+        //[HttpGet]
+        //[Route("api/Korisnici/DispecerskeVoznje/{id}")]
+        //public IHttpActionResult GetDispecerDrives (String id)
+        //{
+
+        //}
+
         [HttpGet]
-        [Route ("api/Korisnici/KorisnickeVoznje/{id}")]
-        public IHttpActionResult GetUserDrives(String id)
+        [Route ("api/Korisnici/KorisnickeVoznje")]
+        public IHttpActionResult GetUserDrives([FromUri]String id)
         {
             Korisnik kor = db.Korisnici.Include(korisnik => korisnik.Voznje).ToList().Find(k => k.KorisnikID == id);
 
@@ -267,8 +275,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/Korisnici/GetFreeDrivers/{id}")]
-        public IHttpActionResult GetFreeDriver(string id)
+        [Route("api/Korisnici/GetFreeDrivers")]
+        public IHttpActionResult GetFreeDriver([FromUri]string id)
         {
             if (!GetLoggedUsers.Contains(id))
                 return Unauthorized();
@@ -286,6 +294,7 @@ namespace WebAPI.Controllers
 
             return Ok(slobodniVozaci);
         }
+
 
 
         // DELETE: api/Korisnici/5
