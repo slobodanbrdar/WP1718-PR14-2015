@@ -431,14 +431,71 @@ function isipisTabeluVoznjiDispecer(data) {
             content += "<tr> <td>" + val.VoznjaID + "</td><td>" + getDriverId(val) + "</td><td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
                 val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
                 "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
-                "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td></tr>";
+                "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td>";
+            if (val.StatusVoznje == 1) {
+                content += "<td><a href='' id='dodelivozacu'>Dodeli vozacu</a></td></tr>";
+            } else {
+                content += "</tr>";
+            }
         });
 
         content += "</table>";
     }
     $("div#regdiv").html(content);
     $("div#regdiv").show();
+    $("a#dodelivozacu").bind('click', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        var idVoznje = $(this).parent().siblings().eq(0).text();
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "api/Korisnici/GetFreeDrivers",
+            data: { id: localStorage.getItem('ulogovan') },
+            success: function (data) {
+                if (data.length == 0) {
+                    alert("Nema slobodnih vozaca");
+                }
+                else {
+                    $("div#regdiv").load("./Content/partials/dodeliVozacu.html", function () {
+                        var content = selectSlobodneVozace(data);
+                        $("table#dodelaTable").append(content);
+                        $("input[name='voznjaid']").val(idVoznje);
+                        $("input[name='senderid']").val(localStorage.getItem('ulogovan'));
+                        
+                        doDodelaVoznje();
+                    });
+                }
+            }
+        });
+    })
 
+}
+
+function doDodelaVoznje() {
+    $("form#dodeliVozacu").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "PUT",
+            dataType: "json",
+            data: $("form#dodeliVozacu").serialize(),
+            url: "api/Voznje/DodeliVozacu",
+            success: function () {
+                alert("Uspesno ste dodelili voznju vozacu");
+                loadHomepage();
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status == 406) {
+                    alert(jqXHR.responseJSON);
+                    loadHomepage();
+                }
+                else {
+                    alert(jqXHR.statusText);
+                    loadHomepage();
+                }
+            }
+        });
+    });
 }
 
 function getDriverId(val) {

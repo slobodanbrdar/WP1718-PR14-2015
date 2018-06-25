@@ -177,6 +177,7 @@
     <Compile Include="Models\Automobil.cs" />
     <Compile Include="Models\AutomobilRegModel.cs" />
     <Compile Include="Models\DodelaKomentaraModel.cs" />
+    <Compile Include="Models\DodelaVoznjeModel.cs" />
     <Compile Include="Models\Entities\KomentarEntity.cs" />
     <Compile Include="Models\Entities\KorisnikEntity.cs" />
     <Compile Include="Models\Entities\AutomobilEntity.cs" />
@@ -205,6 +206,7 @@
     <Content Include="Content\partials\change.html" />
     <Content Include="Content\partials\dodajVoznjuDispecer.html" />
     <Content Include="Content\partials\dodajVoznjuMusterija.html" />
+    <Content Include="Content\partials\dodeliVozacu.html" />
     <Content Include="Content\partials\homepageHeader.html" />
     <Content Include="Content\partials\izmeniVoznju.html" />
     <Content Include="Content\partials\komentarOtkazana.html" />
