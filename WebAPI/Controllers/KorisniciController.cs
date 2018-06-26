@@ -103,7 +103,7 @@ namespace WebAPI.Controllers
             if (k.Uloga != EUloga.DISPECER)
                 return Unauthorized();
 
-            List<Voznja> retVoznje = voznje.Voznjas.Include(kom => kom.KomentarVoznje).Where(i => i.DispecerID == id).ToList();
+            List<Voznja> retVoznje = voznje.Voznjas.Include(kom => kom.KomentarVoznje).Include(v => v.Vozac).Include(koris => koris.Musterija).Where(i => i.DispecerID == id).ToList();
             return Ok(retVoznje);
         }
 
@@ -165,21 +165,59 @@ namespace WebAPI.Controllers
             return Ok(retVoznje);
         }
 
+        [HttpPut]
+        [Route("api/Korisnici/PromenaLokacije")]
+        public IHttpActionResult PromenaLokacije (PromenaLokacijeModel promena)
+        {
+            if (!GetLoggedUsers.Contains(promena.SenderID))
+                return Unauthorized();
+
+            Korisnik vozac = db.Korisnici.Find(promena.KorisnikID);
+            Korisnik sender = db.Korisnici.Find(promena.SenderID);
+
+            if (vozac.Uloga != EUloga.VOZAC)
+                return Content(HttpStatusCode.NotAcceptable, "Lokacija se dodeljuje samo vozacu");
+
+            if (sender.Uloga == EUloga.MUSTERIJA)
+                return Unauthorized();
+
+            vozac.XKoordinata = promena.LokacijaX;
+            vozac.YKoordinata = promena.LokacijaY;
+
+            db.Entry(vozac).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!KorisnikExists(vozac.KorisnikID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
         // PUT: api/Korisnici/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutKorisnik(string id, Korisnik korisnik)
+        [HttpPut]
+        public IHttpActionResult PutKorisnik(Korisnik korisnik)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != korisnik.KorisnikID)
-            {
-                return BadRequest();
-            }
+           
 
-            if(!GetLoggedUsers.Contains(id))
+            if(!GetLoggedUsers.Contains(korisnik.KorisnikID))
             {
                 return Content(HttpStatusCode.Unauthorized, "Morate biti ulogovani da biste izvrsili ovu operaciju");
             }
@@ -194,7 +232,7 @@ namespace WebAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!KorisnikExists(id))
+                if (!KorisnikExists(korisnik.KorisnikID))
                 {
                     return NotFound();
                 }

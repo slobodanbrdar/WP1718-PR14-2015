@@ -46,9 +46,9 @@ namespace WebAPI.Controllers
             {
                 return Unauthorized();
             }
-            List<Voznja> voznje = db.Voznjas.ToList();
+            
 
-            return Ok(db.Voznjas.Include(koment => koment.KomentarVoznje));
+            return Ok(db.Voznjas.Include(m => m.Musterija).Include(koment => koment.KomentarVoznje).Include(v => v.Vozac).ToList());
         }
 
         [ResponseType(typeof(Voznja))]

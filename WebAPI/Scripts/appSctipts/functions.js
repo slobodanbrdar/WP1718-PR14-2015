@@ -293,7 +293,7 @@ function doChangeSubmit() {
                             $.ajax({
                                 data: $("#changeForm").serialize(),
                                 type: "PUT",
-                                url: "api/Korisnici/" + localStorage.getItem('ulogovan'),
+                                url: "api/Korisnici/PutKorisnik",
                                 dataType: "json",
                                 success: function () {
                                     loadHomepage();
