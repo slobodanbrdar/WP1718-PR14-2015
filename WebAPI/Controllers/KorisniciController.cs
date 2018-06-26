@@ -326,7 +326,7 @@ namespace WebAPI.Controllers
 
         // POST: api/Korisnici
         [ResponseType(typeof(Korisnik))]
-        
+        [HttpPost, Route("api/Korisnici/PostKorisnik")]
         public IHttpActionResult PostKorisnik(Korisnik korisnik)
         {
             if (!ModelState.IsValid)
@@ -359,7 +359,7 @@ namespace WebAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = korisnik.KorisnikID }, korisnik);
+            return Ok(korisnik);
         }
 
         [HttpGet]

@@ -241,7 +241,7 @@ function doLogSubmit() {
 }
 
 function doRegistrationSubmit() {
-    $.post('/api/korisnici/', $('form#regform').serialize())
+    $.post('/api/korisnici/PostKorisnik', $('form#regform').serialize())
         .done(function (status, data, xhr) {
             alert(data);
         }).fail(function (jqXHR, textStatus) {

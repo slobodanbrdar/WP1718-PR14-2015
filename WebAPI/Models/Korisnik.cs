@@ -47,7 +47,7 @@ namespace WebApi.Models
             set
             {
                 xKoordinata = value;
-                LokacijaKey = XKoordinata + YKoordinata;
+                LokacijaKey = XKoordinata + "_" + YKoordinata;
             }
         }
         public String YKoordinata
@@ -60,7 +60,7 @@ namespace WebApi.Models
             set
             {
                 yKoordinata = value;
-                LokacijaKey = XKoordinata + YKoordinata;
+                LokacijaKey = XKoordinata + "_" + YKoordinata;
             }
         }
 
