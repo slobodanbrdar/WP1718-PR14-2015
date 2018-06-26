@@ -250,7 +250,7 @@ function isisiOpis(par) {
 
 function isisiOcenu(par) {
     if ( par == null) {
-        return "Nije postavljen komentar";
+        return "0";
     }
     else {
         return par.Ocena;
@@ -507,40 +507,180 @@ function getDriverId(val) {
     }
 }
 
+//function sortirajOcene(n) {
+//    var tabela, red, kolona, switching, i, x, y, shouldswitch;
+//    tabela = document.getElementById("musterijaTabela");
+//    switching = true;
+    
+//    while (switching) {
+//        switching = false;
+
+//    }
+//}
+
+function getStatus(num) {
+    if (num == 1) {
+        return "Kreirana - Na cekanju";
+    }
+    else if (num == 2) {
+        return "Otkazana";
+    }
+    else if (num == 3) {
+        return "Formirana";
+    }
+    else if (num == 4) {
+        return "U toku";
+    }
+    else if (num == 5) {
+        return "Obradjena";
+    }
+    else if (num == 6) {
+        return "Prihvacena";
+    }
+    else if (num == 7) {
+        return "Neuspesna";
+    }
+    else if (num == 8) {
+        return "Uspesna";
+    }
+}
+
+function getSelect() {
+    var content = "<select id='driveState'><option value=''></option><option value='Kreirana - Na cekanju'>Kreirana - Na cekanju</option>";
+    content += "<option value='Otkazana'>Otkazana</option><option value='Formirana'>Formirana</option><option value='U toku'>U toku</option><option value='Obradjena'>Obradjena</option><option value='Prihvacena'>Prihvacena</option>";
+    content += "<option value='Neuspesna'>Neuspesna</option><option value='Uspesna'>Uspesna</option></select>";
+    return content;
+}
+
 function ispisiTabeluVoznji(data) {
     if (data.length == 0) {
         var content = "<p> Jos niste zakazivali voznje <p>"
     }
     else {
-        var content = '<table border="2"> <tr> <td colspan="11" align="center">Moje voznje</td>';
-        content += "<tr><td>Datum zakazivanja</td><td>Vozac</td><td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
-                <td>Zeljeni tip</td><td>Iznos</td><td>Status voznje</td><td>Komentar</td> <td>Ocena</td> <td>Datum objave</td> <td>Korisnicko ime</td></tr > ";
+        var content = "<label>Minimalna ocena</label><input type='number' id='min'/>  <label>Maksimalna ocena</label><input type='number' id='max'/>";
+        content += "</br> <label> Minimalna cena</label><input type='number' id='mincena'/>  <label> Maksimalna cena</label><input type='number' id='maxcena'/>";
+        content += "</br> <label> Datum od </label> <input type='date' id='od'/> <label> Datum do </label> <input type='date' id='do'/>";
+        content += '<table border="2" id="musterijaTabela"><thead> <tr> <td colspan="11" align="center">Moje voznje</td>';
+        content += "<tr><th class='datum'>Datum zakazivanja</th><th class='nosort'>Vozac</th><th class='nosort'>Lokacija X koordinata</th><th class='nosort'>Lokaxija Y koordinata</th><th class='nosort'>Odrediste X koordinata</th><th class='nosort'>Odrediste Y koordinata</th>\
+                <th class='nosort'>Zeljeni tip</th><th class='nosort'>Iznos</th><th class='nosort'>Status voznje</th><th class='nosort'>Komentar</th> <th class='ocena'>Ocena</th> <th class='nosort'>Datum objave</th> <th class='nosort'>Korisnicko ime</th></tr ><thead> <tbody>";
+        content += "</br><label>Filtriranje po statusu voznje</label>" + getSelect();
         $.each(data, function (i, val) {
             content += "<tr> <td>" + val.VoznjaID + "</td> <td>" + getDriverId(val) + "</td> <td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
                 val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
                 "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
                 "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td>";
             if (val.StatusVoznje == 1) {
-                content += "<td><a href='' id='otkazivoznju'> Otkazi voznju </a> </td>";
-                content += "<td><a href='' id='izmenivoznju'> Izmeni voznju </a> </td>";
+                content += "<td><button href='' id='otkazivoznju'> Otkazi voznju </button> </td>";
+                content += "<td><button href='' id='izmenivoznju'> Izmeni voznju </button> </td>";
             }
             else if (val.StatusVoznje == 8 && val.KomentarVoznje == null) {
-                content += "<td><a href='' id='kometarisivoznju'> Kometarisi </a></td>";
+                content += "<td><button id='kometarisivoznju'> Kometarisi </button></td>";
             }
 
-            content += "</tr>"
+
 
         });
 
-        content += "</table>";
+        content += "</tbody></table>";
+        content += "</tr>"
+        
     }
 
 
     $("div#regdiv").html(content);
     $("div#regdiv").show();
-    $("a#izmenivoznju").bind('click', function (e) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
+    $.fn.dataTable.moment('MMMM Do YYYY, h:mm:ss a');
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var min = parseInt($("input#min").val(), 10);
+            var max = parseInt($("input#max").val(), 10);
+            var ocena = parseInt(data[10], 10);
+
+            if ((isNaN(min) && isNaN(max)) || (isNaN(min) && ocena <= max) || (ocena >= min && isNaN(max)) || (ocena >= min && ocena <= max)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    );
+    var table = $('#musterijaTabela').DataTable({
+        "ordering": true,
+        "searching": true,
+        dom: 't',
+        columnDefs: [{ "orderSequence": ["desc"], "targets": "ocena" },
+            { "orderable": false, "targets": "nosort" },
+            { "orderSequence": ["desc"], "targets": "datum" }
+            //{ "searchable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12] }
+        ],
+
+        paging: false
+    });
+    $("input#min, input#max").keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var min = parseFloat($("input#mincena").val(), 10);
+            var max = parseFloat($("input#maxcena").val(), 10);
+            var cena = parseFloat(data[7]);
+
+            if ((isNaN(min) && isNaN(max)) || (isNaN(min) && cena <= max) || (cena >= min && isNaN(max)) || (cena >= min && cena <= max)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    );
+
+    $("input#mincena, input#maxcena").keyup(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var Od = moment($("input#od").val());
+            var Do = moment($("input#do").val());
+            var datum = moment(data[0], "MMMM Do YYYY, h:mm:ss a").format("YYYY-MM-DD");
+            Od = moment(Od, "YYYY-MM-DD");
+            Do = moment(Do, "YYYY-MM-DD");
+            var datum = moment(datum, "YYYY-MM-DD"); 
+
+
+            if ((!moment(Od).isValid() && !moment(Do).isValid()) || (!moment(Od).isValid() && datum < Do) || (datum > Od && !moment(Do).isValid()) || (datum > Od && datum < Do)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    );
+
+    $("input#od, input#do").change(function () {
+        table.draw();
+    });
+
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var izabraniStatus = $("select#driveState").val();
+            var trenutniStatus = data[8];
+
+            if (izabraniStatus == "" || izabraniStatus == trenutniStatus) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    );
+
+    $("select#driveState").change(function () {
+        table.draw();
+    });
+
+    $(document).on('click', "button#izmenivoznju", function () {
         var xKoordinata = $(this).parent().siblings().eq(1).text();
         var yKoordinata = $(this).parent().siblings().eq(2).text();
         var idVoznje = $(this).parent().siblings().eq(0).text();
@@ -578,9 +718,8 @@ function ispisiTabeluVoznji(data) {
 
 
     });
-    $("a#kometarisivoznju").bind('click', function (e) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
+    $(document).on('click', "button#kometarisivoznju", function () {
+        
         var datumZakazivanja = $(this).parent().siblings().eq(0).text();
         $("div#regdiv").load("./Content/partials/komentarOtkazana.html", function () {
             $("input[name='kometarID']").val(moment().format('MMMM Do YYYY, h:mm:ss a'));
@@ -589,9 +728,7 @@ function ispisiTabeluVoznji(data) {
             doOtkazVoznja();
         });
     });
-    $("a#otkazivoznju").bind('click', function (e) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
+    $(document).on('click', "button#otkazivoznju", function () {
 
         var idVoznje = $(this).parent().siblings().eq(0).text();
         var datumZakazivanja = $(this).parent().siblings().eq(0).text();
@@ -666,32 +803,8 @@ function getTip(num) {
     }
 }
 
-function getStatus(num) {
-    if (num == 1) {
-        return "Kreirana - Na cekanju";
-    }
-    else if (num == 2) {
-        return "Otkazana";
-    }
-    else if (num == 3) {
-        return "Formirana";
-    }
-    else if (num == 4) {
-        return "U toku";
-    }
-    else if (num == 5) {
-        return "Obradjena";
-    }
-    else if (num == 6) {
-        return "Prihvacena";
-    }
-    else if (num == 7) {
-        return "Neuspesna";
-    }
-    else if (num == 8) {
-        return "Uspesna";
-    }
-}
+
+
 
 function doOtkazVoznja() {
     
