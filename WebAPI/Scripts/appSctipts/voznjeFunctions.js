@@ -1,6 +1,4 @@
-﻿
-
-function doVoznjaMusterija() {
+﻿function doVoznjaMusterija() {
     $("input[name='xkoordinata']").val($("input[name='lokacija_xkoordinata']").val());
     $("input[name='ykoordinata']").val($("input[name='lokacija_ykoordinata']").val());
     $("input[name='voznjaId']").val(moment().format('MMMM Do YYYY, h:mm:ss a'));
@@ -238,17 +236,19 @@ function validateIzmenaVoznje() {
 
 function startMapPotvrda() {
     var uluru = { lat: 45.2671, lng: 19.8335 };
-
+    for (i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
     $("div#map").show();
     $("button#submitMap").show();
 
 
-    var marker = new google.maps.Marker({
+    marker = new google.maps.Marker({
         position: uluru,
         map: map,
         draggable: true
     });
-
+    markers.push(marker);
     $("button#submitMap").on('click', function (e) {
         e.stopImmediatePropagation();
         var latitude = marker.getPosition().lat();
@@ -304,17 +304,20 @@ function startMapPotvrda() {
 
 function startMapDodajVoznju() {
     var uluru = { lat: 45.2671, lng: 19.8335 };
+    for (i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
 
     $("div#map").show();
     $("button#submitMap").show();
 
 
-    var marker = new google.maps.Marker({
+    marker = new google.maps.Marker({
         position: uluru,
         map: map,
         draggable: true
     });
-
+    markers.push(marker);
     $("button#submitMap").on('click', function (e) {
         e.stopImmediatePropagation();
         var latitude = marker.getPosition().lat();
@@ -754,6 +757,7 @@ function isipisTabeluVoznjiDispecer(data) {
     $("div#regdiv").show();
     $.fn.dataTable.moment('MMMM Do YYYY, h:mm:ss a');
 
+
     var table = $('#dispecerTabela').DataTable({
         "ordering": true,
         "searching": true,
@@ -863,11 +867,17 @@ function isipisTabeluVoznjiDispecer(data) {
         e.stopImmediatePropagation();
         e.preventDefault();
         var idVoznje = $(this).parent().siblings().eq(0).text();
+        var lokx = $(this).parent().siblings().eq(7).text();
+        var loky = $(this).parent().siblings().eq(8).text();
         $.ajax({
-            type: "GET",
+            type: "POST",
             dataType: "json",
             url: "api/Korisnici/GetFreeDrivers",
-            data: { id: localStorage.getItem('ulogovan') },
+            data: {
+                KorisnikID: localStorage.getItem('ulogovan'),
+                LokacijaX: lokx,
+                LokacijaY: loky
+            },
             success: function (data) {
                 if (data.length == 0) {
                     alert("Nema slobodnih vozaca");
@@ -922,7 +932,6 @@ function getDriverId(val) {
         return val.VozacID;
     }
 }
-
 
 function getStatus(num) {
     if (num == 1) {
@@ -1205,7 +1214,6 @@ function ispisiTabeluVoznji(data) {
     }) 
 }
 
-
 function getTip(num) {
     if (num == 0) {
         return "Proizvoljno";
@@ -1217,7 +1225,6 @@ function getTip(num) {
         return "Kombi";
     }
 }
-
 
 function doOtkazVoznja() {
     
@@ -1275,62 +1282,93 @@ function doVoznjaDispecer() {
     $("input[name='voznjaId']").val(moment().format('MMMM Do YYYY, h:mm:ss a'));
     $("input[name='dispecerId']").val(localStorage.getItem('ulogovan'));
 
+
     $.ajax({
         type: "POST",
         dataType: "json",
-        data: $("form#voznjaDispecer").serialize(),
-        url: "api/Lokacije/",
-        success: function (data) {
-            $.ajax({
-                type: "POST",
-                data: $("form#voznjaDispecer").serialize(),
-                url: "api/voznje/",
-                dataType: "json",
-                success: function () {
-                    loadHomepage();
-                },
-                error: function (jqXHR) {
-                    if (jqXHR.status != 406) {
-                        alert(jqXHR.statusText);
-                        loadHomepage();
-                    }
-                    else {
-                        alert("Vozac ne poseduje zeljeni tip automobila");
-                    }
-                    
-                }
-            })
+        url: "api/Korisnici/GetFreeDrivers",
+        data: {
+            'LokacijaX': $("input[name='xkoordinata']").val(),
+            'LokacijaY': $("input[name='ykoordinata']").val(),
+            'KorisnikID': localStorage.getItem('ulogovan')
         },
-        error: function (jqXHR) {
-            let x = $("input[name='xkoordinata']").val();
-            let y = $("input[name='ykoordinata']").val();
-            $.ajax({
-                type: "PUT",
-                data: $("form#voznjaDispecer").serialize(),
-                url: "api/lokacije/PutLokacija",
-                dataType: "json",
-                success: function () {
+        success: function (data) {
+            if (data.length == 0) {
+                alert("Trenutno nema slobodnih vozaca");
+                loadHomepage();
+            }
+            else {
+                var content = selectSlobodneVozace(data);
+                $("table#voznjaDispecerTabela").append(content);
+                $("input[name='xkoordinata']").prop('hidden', true);  
+                $("input[name='ykoordinata']").prop('hidden', true);
+                $("form#voznjaDispecer").submit(function (e) {
+                    e.preventDefault();
                     $.ajax({
                         type: "POST",
-                        data: $("form#voznjaDispecer").serialize(),
-                        url: "api/voznje/",
                         dataType: "json",
-                        success: function () {
-                            loadHomepage();
+                        data: $("form#voznjaDispecer").serialize(),
+                        url: "api/Lokacije/",
+                        success: function (data) {
+                            $.ajax({
+                                type: "POST",
+                                data: $("form#voznjaDispecer").serialize(),
+                                url: "api/voznje/",
+                                dataType: "json",
+                                success: function () {
+                                    loadHomepage();
+                                },
+                                error: function (jqXHR) {
+                                    if (jqXHR.status != 406) {
+                                        alert(jqXHR.statusText);
+                                        loadHomepage();
+                                    }
+                                    else {
+                                        alert("Vozac ne poseduje zeljeni tip automobila");
+                                    }
+
+                                }
+                            })
                         },
                         error: function (jqXHR) {
-                            alert(jqXHR.statusText);
-                            loadHomepage();
+                            let x = $("input[name='xkoordinata']").val();
+                            let y = $("input[name='ykoordinata']").val();
+                            $.ajax({
+                                type: "PUT",
+                                data: $("form#voznjaDispecer").serialize(),
+                                url: "api/lokacije/PutLokacija",
+                                dataType: "json",
+                                success: function () {
+                                    $.ajax({
+                                        type: "POST",
+                                        data: $("form#voznjaDispecer").serialize(),
+                                        url: "api/voznje/",
+                                        dataType: "json",
+                                        success: function () {
+                                            loadHomepage();
+                                        },
+                                        error: function (jqXHR) {
+                                            alert(jqXHR.statusText);
+                                            loadHomepage();
+                                        }
+                                    })
+                                },
+                                error: function (jqXHR) {
+                                    alert(jqXHR.statusText);
+                                    loadHomepage();
+                                }
+                            })
                         }
-                    })
-                },
-                error: function (jqXHR) {
-                    alert(jqXHR.statusText);
-                    loadHomepage();
-                }
-            })
+                    });
+                });
+            }
+        },
+        error: function (jqXHR) {
+            alert(jqXHR.statusText);
+            loadHomepage();
         }
     });
+
 }
 
 function validatePotvrda() {

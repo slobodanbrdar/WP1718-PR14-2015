@@ -12,6 +12,7 @@ using WebAPI.Models.Entities;
 using WebApi.Models;
 using System.Web;
 using WebAPI.Models;
+using System.Windows;
 
 namespace WebAPI.Controllers
 {
@@ -362,14 +363,14 @@ namespace WebAPI.Controllers
             return Ok(korisnik);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("api/Korisnici/GetFreeDrivers")]
-        public IHttpActionResult GetFreeDriver([FromUri]string id)
+        public IHttpActionResult GetFreeDriver(NearestFiveModel model)
         {
-            if (!GetLoggedUsers.Contains(id))
+            if (!GetLoggedUsers.Contains(model.KorisnikID))
                 return Unauthorized();
 
-            Korisnik k = db.Korisnici.Find(id);
+            Korisnik k = db.Korisnici.Find(model.KorisnikID);
             if (k == null)
                 return NotFound();
 
@@ -386,7 +387,83 @@ namespace WebAPI.Controllers
                     return true;
             }).ToList();
 
-            return Ok(slobodniVozaci);
+             
+
+            List<Korisnik> retVozaci = new List<Korisnik>();
+            if (slobodniVozaci.Count > 5)
+            {
+                Double x, y;
+                try
+                {
+                    x = Double.Parse(model.LokacijaX);
+                    y = Double.Parse(model.LokacijaY);
+                }
+                catch (Exception)
+                {
+                    return InternalServerError();
+                }
+
+                Point lokacija = new Point(x, y);
+                foreach(Korisnik koris in slobodniVozaci)
+                {
+                    if (retVozaci.Count < 5)
+                    {
+                        retVozaci.Add(koris);
+                    }
+                    else
+                    {
+                        Double korisLokX, korisLokY;
+                        try
+                        {
+                            korisLokX = Double.Parse(koris.XKoordinata);
+                            korisLokY = Double.Parse(koris.YKoordinata);
+                        }
+                        catch (Exception)
+                        {
+                            return InternalServerError();
+                        }
+
+                        Point korisLokacija = new Point(korisLokX, korisLokY);
+                        Double korisRazdaljina = Math.Abs(Point.Subtract(lokacija, korisLokacija).Length);
+                        Double najvecaRazdaljina = 0;
+                        int index = -1;
+                        for (int i = 0; i < retVozaci.Count; i++)
+                        {
+                            Double iLokX, iLokY;
+                            try
+                            {
+                                iLokX = Double.Parse(retVozaci[i].XKoordinata);
+                                iLokY = Double.Parse(retVozaci[i].YKoordinata);
+                            }
+                            catch (Exception)
+                            {
+                                return InternalServerError();
+                            }
+
+                            Point iLok = new Point(iLokX, iLokY);
+                            Double iRazdaljina = Math.Abs(Point.Subtract(lokacija, iLok).Length);
+                            if (iRazdaljina > najvecaRazdaljina)
+                            {
+                                najvecaRazdaljina = iRazdaljina;
+                                index = i;
+                            }
+                        }
+
+                        if(najvecaRazdaljina > korisRazdaljina)
+                        {
+                            retVozaci.RemoveAt(index);
+                            retVozaci.Add(koris);
+                        }
+                    }
+                }
+                
+            }
+            else
+            {
+                retVozaci = slobodniVozaci;
+            }
+
+            return Ok(retVozaci);
         }
 
 

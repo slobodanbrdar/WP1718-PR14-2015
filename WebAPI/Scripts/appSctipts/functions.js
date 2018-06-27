@@ -23,29 +23,7 @@ function loadHomepage() {
                         $("div#regdiv").show();
                     }
                     else {
-                        $.ajax({
-                            type: "GET",
-                            dataType: "json",
-                            url: "api/Korisnici/GetFreeDrivers",
-                            data: { id: localStorage.getItem('ulogovan') },
-                            success: function (data) {
-                                if (data.length == 0) {
-                                    alert("Nema slobodnih vozaca");
-
-                                } else {
-                                    $("div#regdiv").show();
-                                    $("div#regdiv").load("./Content/partials/dodajVoznjuDispecer.html", function () {
-                                        var content = selectSlobodneVozace(data);
-                                        $("table#voznjaDispecerTabela").append(content);
-                                    });
-                                }
-                                
-                            },
-                            error: function (jqXHR) {
-                                alert(jqXHR.statusText);
-                                loadHomepage();
-                            }
-                        });
+                        $("div#regdiv").load("./Content/partials/dodajVoznjuDispecer.html");
                     }
                    
                 });
@@ -284,6 +262,7 @@ function doDriverRegistrationSubmit() {
 }
 
 var map;
+var markers = [];
 function initMap() {
 
     var uluru = { lat: 45.2671, lng: 19.8335 };
@@ -294,12 +273,16 @@ function initMap() {
 }
 
 function startMap() {
+    for (i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
     var uluru = { lat: 45.2671, lng: 19.8335 };
     var marker = new google.maps.Marker({
         position: uluru,
         map: map,
         draggable: true
     });
+    markers.push(marker);
     $("div#map").show();
     $("button#submitMap").show();
     $("button#submitMap").on('click', function (e) {
