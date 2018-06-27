@@ -1,6 +1,8 @@
 ﻿//======================Load pages=========================
 function loadHomepage() {
     //$("a#prikazisvevoznje").hide();
+    $("div#map").hide();
+    $("button#submitMap").hide();
     $.ajax({
         type: "GET",
         url: "api/Korisnici",
@@ -78,6 +80,8 @@ function loadHomepage() {
                             $("a#prikazisvevoznje").show();
                             $("a#prikazisvevoznje").bind('click', function (e) {
                                 e.preventDefault();
+                                $("div#map").hide();
+                                $("button#submitMap").hide();
                                 $.ajax({
                                     type: "GET",
                                     dataType: "json",
@@ -112,6 +116,8 @@ function loadHomepage() {
                         $("a#kreiranevoznje").show();
                         $("a#kreiranevoznje").bind('click', function (e) {
                             e.preventDefault();
+                            $("div#map").hide();
+                            $("button#submitMap").hide();
                             $.ajax({
                                 type: "GET",
                                 dataType: "json",
@@ -178,6 +184,8 @@ function loadHomepage() {
             $("#dodajvozaca").bind('click', function () {
                 $("div#welcomediv").hide();
                 $("div#regdiv").show();
+                $("div#map").hide();
+                $("button#submitMap").hide();
                 $("#regdiv").load("./Content/partials/addDriver.html");
                 return false;
             });
@@ -275,8 +283,69 @@ function doDriverRegistrationSubmit() {
    
 }
 
+var map;
+function initMap() {
 
+    var uluru = { lat: 45.2671, lng: 19.8335 };
 
+    map = new google.maps.Map(
+        document.getElementById('map'), { zoom: 12, center: uluru });
+
+}
+
+function startMap() {
+    var uluru = { lat: 45.2671, lng: 19.8335 };
+    var marker = new google.maps.Marker({
+        position: uluru,
+        map: map,
+        draggable: true
+    });
+    $("div#map").show();
+    $("button#submitMap").show();
+    $("button#submitMap").on('click', function (e) {
+        e.stopImmediatePropagation();
+        var latitude = marker.getPosition().lat();
+        var longitude = marker.getPosition().lng();
+
+        $.ajax({
+            url: "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + ',' + longitude + "&sensor=true",
+            type: "get",
+            success: function (data) {
+                $("input[name='lokacijavozaca_xkoordinata']").val(latitude);
+                $("input[name='lokacijavozaca_ykoordinata']").val(longitude);
+                if (data.status == "OK") {
+                    if (data.results[0].address_components.length == 7) {
+                        var adresa = data.results[0].address_components;
+                        $("input[name='broj']").val(adresa[0].long_name);
+                        $("input[name='ulica']").val(adresa[1].long_name);
+                        $("input[name='mesto']").val(adresa[2].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[6].long_name);
+                    }
+                    else if (data.results[0].address_components.length == 6) {
+                        var adresa = data.results[0].address_components;
+                        $("input[name='broj']").val(adresa[0].long_name);
+                        $("input[name='ulica']").val(adresa[1].long_name);
+                        $("input[name='mesto']").val(adresa[2].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[5].long_name);
+                    }
+                    else if (data.results[0].address_components.length == 5) {
+                        var adresa = data.results[0].address_components;
+                        alert("Nismo uspeli da dobavimo vas broj i postanski broj. Ukoliko zelite ove podatke mozete uneti rucno");
+                        $("input[name='ulica']").val(adresa[0].long_name);
+                        $("input[name='mesto']").val(adresa[1].long_name);
+                    }
+                }
+                else {
+                    alert("Dogodila se greska prilikom pribavaljanja vase lokacije. Molimo vas da ove podatke unesete rucno ili probajte ponovo.");
+                }
+
+            },
+            error: function (jqXHR) {
+                alert('fail ' + jqXHR.statusText);
+            }
+        });
+    });
+}
 function doChangeSubmit() {
     $.ajax({
         type: "GET",

@@ -329,7 +329,7 @@ namespace WebAPI.Controllers
                     return Unauthorized();
 
                 Korisnik vozac = kor.Korisnici.Find(voznja.VozacID);
-                if (vozac.ZeljeniTip != voznja.ZeljeniTip)
+                if (vozac.ZeljeniTip != voznja.ZeljeniTip && vozac.ZeljeniTip != ETipAutomobila.PROIZVOLJNO && voznja.ZeljeniTip != ETipAutomobila.PROIZVOLJNO)
                 {
                     return Content(HttpStatusCode.NotAcceptable, "Vozac ne poseduje ovaj tip automobila");
                 }

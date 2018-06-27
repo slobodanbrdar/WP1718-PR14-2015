@@ -236,6 +236,138 @@ function validateIzmenaVoznje() {
     });
 }
 
+function startMapPotvrda() {
+    var uluru = { lat: 45.2671, lng: 19.8335 };
+
+    $("div#map").show();
+    $("button#submitMap").show();
+
+
+    var marker = new google.maps.Marker({
+        position: uluru,
+        map: map,
+        draggable: true
+    });
+
+    $("button#submitMap").on('click', function (e) {
+        e.stopImmediatePropagation();
+        var latitude = marker.getPosition().lat();
+        var longitude = marker.getPosition().lng();
+
+        $.ajax({
+            url: "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + ',' + longitude + "&sensor=true",
+            type: "get",
+            success: function (data) {
+                $("input[name='odredistex']").val(latitude);
+                $("input[name='odredistey']").val(longitude);
+                if (data.status == "OK") {
+                    if (data.results[0].address_components.length == 7) {
+                        var adresa = data.results[0].address_components;
+                        $("input[name='broj']").val(adresa[0].long_name);
+                        $("input[name='ulica']").val(adresa[1].long_name);
+                        $("input[name='mesto']").val(adresa[2].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[6].long_name);
+                    }
+                    else if (data.results[0].address_components.length == 6) {
+                        var adresa = data.results[0].address_components;
+
+                        $("input[name='broj']").val(adresa[0].long_name);
+                        $("input[name='ulica']").val(adresa[1].long_name);
+                        $("input[name='mesto']").val(adresa[2].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[5].long_name);
+                    }
+                    else if (data.results[0].address_components.length == 5) {
+                        var adresa = data.results[0].address_components;
+                        alert("Nismo uspeli da dobavimo vas broj i postanski broj. Ukoliko zelite ove podatke mozete uneti rucno");
+                        $("input[name='ulica']").val(adresa[0].long_name);
+                        $("input[name='mesto']").val(adresa[1].long_name)
+                    }
+                    else if (data.results[0].address_components.length > 7) {
+                        var adresa = data.results[0].address_components;
+                        $("input[name='broj']").val(adresa[0].long_name);
+                        $("input[name='ulica']").val(adresa[1].long_name);
+                        $("input[name='mesto']").val(adresa[2].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[data.results[0].address_components.length - 1].long_name);
+                    }
+                }
+                else {
+                    alert("Dogodila se greska prilikom pribavaljanja vase lokacije. Molimo vas da ove podatke unesete rucno ili probajte ponovo.");
+                }
+
+            },
+            error: function (jqXHR) {
+                alert('fail ' + jqXHR.statusText);
+            }
+        });
+    });
+}
+
+function startMapDodajVoznju() {
+    var uluru = { lat: 45.2671, lng: 19.8335 };
+
+    $("div#map").show();
+    $("button#submitMap").show();
+
+
+    var marker = new google.maps.Marker({
+        position: uluru,
+        map: map,
+        draggable: true
+    });
+
+    $("button#submitMap").on('click', function (e) {
+        e.stopImmediatePropagation();
+        var latitude = marker.getPosition().lat();
+        var longitude = marker.getPosition().lng();
+
+        $.ajax({
+            url: "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + ',' + longitude + "&sensor=true",
+            type: "get",
+            success: function (data) {
+                $("input[name='lokacija_xkoordinata']").val(latitude);
+                $("input[name='lokacija_ykoordinata']").val(longitude);
+                if (data.status == "OK") {
+                    if (data.results[0].address_components.length == 7) {
+                        var adresa = data.results[0].address_components;
+                        $("input[name='broj']").val(adresa[0].long_name);
+                        $("input[name='ulica']").val(adresa[1].long_name);
+                        $("input[name='mesto']").val(adresa[2].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[6].long_name);
+                    }
+                    else if (data.results[0].address_components.length == 6) {
+                        var adresa = data.results[0].address_components;
+                       
+                        $("input[name='broj']").val(adresa[0].long_name);
+                        $("input[name='ulica']").val(adresa[1].long_name);
+                        $("input[name='mesto']").val(adresa[2].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[5].long_name);
+                    }
+                    else if (data.results[0].address_components.length == 5) {
+                        var adresa = data.results[0].address_components;
+                        alert("Nismo uspeli da dobavimo vas broj i postanski broj. Ukoliko zelite ove podatke mozete uneti rucno");
+                        $("input[name='ulica']").val(adresa[0].long_name);
+                        $("input[name='mesto']").val(adresa[1].long_name)
+                    }
+                    else if (data.results[0].address_components.length > 7) {
+                        var adresa = data.results[0].address_components;
+                        $("input[name='broj']").val(adresa[0].long_name);
+                        $("input[name='ulica']").val(adresa[1].long_name);
+                        $("input[name='mesto']").val(adresa[2].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[data.results[0].address_components.length - 1].long_name);
+                    }
+                }
+                else {
+                    alert("Dogodila se greska prilikom pribavaljanja vase lokacije. Molimo vas da ove podatke unesete rucno ili probajte ponovo.");
+                }
+
+            },
+            error: function (jqXHR) {
+                alert('fail ' + jqXHR.statusText);
+            }
+        });
+    });
+}
+
 function validateVoznjaMusterija() {
     $("form#voznjaMusterija").validate({
         rules: {
@@ -433,22 +565,22 @@ function ispisiTabeluVoznjiVozac(data) {
         var content = "<label>Minimalna ocena</label><input type='number' id='min'/>  <label>Maksimalna ocena</label><input type='number' id='max'/>";
         content += "</br> <label> Minimalna cena</label><input type='number' id='mincena'/>  <label> Maksimalna cena</label><input type='number' id='maxcena'/>";
         content += "</br> <label> Datum od </label> <input type='date' id='od'/> <label> Datum do </label> <input type='date' id='do'/>";
-
+        content += "</br><label>Filtriranje po statusu voznje</label>" + getSelect();
 
         content += '<table border="2" id="vozacTabela"><thead> <tr> <td colspan="11" align="center">Moje voznje</td></tr>';
         content += "<tr><th class='datum'>Datum zakazivanja</th><th class='nosort'>Musterija</th><th class='nosort'>Dispecer</th><th class='nosort'>Lokacija X koordinata</th><th class='nosort'>Lokaxija Y koordinata</th><th class='nosort'>Odrediste X koordinata</th><th class='nosort'>Odrediste Y koordinata</th>\
-                <th class='nosort'>Zeljeni tip</th><th class='nosort'>Iznos</th><th class='nosort'>Status voznje</th><th class='nosort'>Komentar</th> <th class='ocena'>Ocena</th> <th class='nosort'>Datum objave</th> <th class='nosort'>Korisnicko ime</th></tr ></thead><tbody> ";
+                <th class='nosort'>Zeljeni tip</th><th class='nosort'>Iznos</th><th class='nosort'>Status voznje</th><th class='nosort'>Komentar</th> <th class='ocena'>Ocena</th> <th class='nosort'>Datum objave</th> <th class='nosort'>Korisnicko ime</th><td class='nosort'></td><td class='nosort'></td></tr></thead><tbody> ";
         
         $.each(data, function (i, val) {
             content += "<tr> <td>" + val.VoznjaID + "</td><td>"+ getUserId(val) +"</td><td>"+getDispId(val)+"</td><td>"+ val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
                 val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
                 "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
                 "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td>";
-            if (val.StatusVoznje == 4) {
+            if (val.StatusVoznje == 4 || val.StatusVoznje == 3) {
                 content += "<td><button id='odbacivoznju'> Odbaci voznju </button></td> <td> <button id='obavivoznju'> Obavi voznju </button></td></tr>"
             }
             else {
-                content += "</tr>";
+                content += "<td></td><td></td></tr>";
             }
         });
 
@@ -602,7 +734,7 @@ function isipisTabeluVoznjiDispecer(data) {
         content += "<tr><td class='datum'>Datum zakazivanja</td><td class='nosort'>Vozac</td><td class='nosort'>Vozac ime</td> <td class='nosort'>Vozac prezime </td>\
                 <td class='nosort'>Musterija</td><td class='nosort'>Musterija ime</td><td class='nosort'>Musterija prezime</td><td class='nosort'>Lokacija X koordinata</td>\
                 <td class='nosort'>Lokaxija Y koordinata</td><td class='nosort'>Odrediste X koordinata</td><td class='nosort'>Odrediste Y koordinata</td>\
-                <td class='nosort'>Zeljeni tip</td><td class='nosort'>Iznos</td><td class='nosort'>Status voznje</td><td class='nosort'>Komentar</td> <td class='ocena'>Ocena</td> <td class='nosort'>Datum objave</td> <td class='nosort'>Korisnicko ime</td></tr > </thead><tbody>";
+                <td class='nosort'>Zeljeni tip</td><td class='nosort'>Iznos</td><td class='nosort'>Status voznje</td><td class='nosort'>Komentar</td> <td class='ocena'>Ocena</td> <td class='nosort'>Datum objave</td> <td class='nosort'>Korisnicko ime</td><td></td></tr > </thead><tbody>";
         $.each(data, function (i, val) {
             content += "<tr> <td>" + val.VoznjaID + "</td><td>" + getDriverId(val) + "</td><td>" + getDriverName(val) + "</td><td>" + getDriverLastName(val) + "</td><td>" + getUserId(val) +
                 "</td><td>" + getUserName(val) + "</td><td>" + getUserLastName(val) + "</td><td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
@@ -612,7 +744,7 @@ function isipisTabeluVoznjiDispecer(data) {
             if (val.StatusVoznje == 1) {
                 content += "<td><button id='dodelivozacu'>Dodeli vozacu</button></td></tr>";
             } else {
-                content += "</tr>";
+                content += "<td></td></tr>";
             }
         });
 
@@ -836,9 +968,9 @@ function ispisiTabeluVoznji(data) {
         content += "</br> <label> Datum od </label> <input type='date' id='od'/> <label> Datum do </label> <input type='date' id='do'/>";
 
 
-        content += '<table border="2" id="musterijaTabela"><thead> <tr> <td colspan="11" align="center">Moje voznje</td>';
+        content += '<table border="2" id="musterijaTabela"><thead> <tr> <td colspan="15" align="center">Moje voznje</td>';
         content += "<tr><th class='datum'>Datum zakazivanja</th><th class='nosort'>Vozac</th><th class='nosort'>Lokacija X koordinata</th><th class='nosort'>Lokaxija Y koordinata</th><th class='nosort'>Odrediste X koordinata</th><th class='nosort'>Odrediste Y koordinata</th>\
-                <th class='nosort'>Zeljeni tip</th><th class='nosort'>Iznos</th><th class='nosort'>Status voznje</th><th class='nosort'>Komentar</th> <th class='ocena'>Ocena</th> <th class='nosort'>Datum objave</th> <th class='nosort'>Korisnicko ime</th></tr ><thead> <tbody>";
+                <th class='nosort'>Zeljeni tip</th><th class='nosort'>Iznos</th><th class='nosort'>Status voznje</th><th class='nosort'>Komentar</th> <th class='ocena'>Ocena</th> <th class='nosort'>Datum objave</th> <th class='nosort'>Korisnicko ime</th><th></th><th></th></tr ><thead> <tbody>";
         content += "</br><label>Filtriranje po statusu voznje</label>" + getSelect();
         $.each(data, function (i, val) {
             content += "<tr> <td>" + val.VoznjaID + "</td> <td>" + getDriverId(val) + "</td> <td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
@@ -850,7 +982,10 @@ function ispisiTabeluVoznji(data) {
                 content += "<td><button href='' id='izmenivoznju'> Izmeni voznju </button> </td>";
             }
             else if (val.StatusVoznje == 8 && val.KomentarVoznje == null) {
-                content += "<td><button id='kometarisivoznju'> Kometarisi </button></td>";
+                content += "<td><button id='kometarisivoznju'> Kometarisi </button></td><td></td>";
+            }
+            else {
+                content += "<td></td><td></td>"
             }
 
 
@@ -998,8 +1133,8 @@ function ispisiTabeluVoznji(data) {
 
 
     });
-    $(document).on('click', "button#kometarisivoznju", function () {
-        
+    $(document).on('click', "button#kometarisivoznju", function (e) {
+        e.stopImmediatePropagation();
         var datumZakazivanja = $(this).parent().siblings().eq(0).text();
         $("div#regdiv").load("./Content/partials/komentarOtkazana.html", function () {
             $("input[name='kometarID']").val(moment().format('MMMM Do YYYY, h:mm:ss a'));
@@ -1008,8 +1143,8 @@ function ispisiTabeluVoznji(data) {
             doOtkazVoznja();
         });
     });
-    $(document).on('click', "button#otkazivoznju", function () {
-
+    $(document).on('click', "button#otkazivoznju", function (e) {
+        e.stopImmediatePropagation();
         var idVoznje = $(this).parent().siblings().eq(0).text();
         var datumZakazivanja = $(this).parent().siblings().eq(0).text();
         var korisnikID = localStorage.getItem('ulogovan');

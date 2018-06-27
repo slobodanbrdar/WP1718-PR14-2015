@@ -16,6 +16,6 @@ namespace WebAPI.Models.Entities
 
         public System.Data.Entity.DbSet<WebApi.Models.Komentar> Komentars { get; set; }
 
-        public System.Data.Entity.DbSet<WebApi.Models.Lokacija> Lokacijas { get; set; }
+        //public System.Data.Entity.DbSet<WebApi.Models.Lokacija> Lokacijas { get; set; }
     }
 }

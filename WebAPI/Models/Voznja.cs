@@ -61,7 +61,7 @@ namespace WebApi.Models
             set
             {
                 odrediste_XKoordinata = value;
-                Odrediste_Key = Odrediste_XKoordinata + Odrediste_YKoordinata;
+                Odrediste_Key = Odrediste_XKoordinata + "_" + Odrediste_YKoordinata;
                 if (Odrediste_XKoordinata == null || Odrediste_YKoordinata == null)
                     Odrediste_Key = null;
             }
@@ -75,7 +75,7 @@ namespace WebApi.Models
             set
             {
                 odrediste_YKoordinata = value;
-                Odrediste_Key = Odrediste_XKoordinata + Odrediste_YKoordinata;
+                Odrediste_Key = Odrediste_XKoordinata + "_" + Odrediste_YKoordinata;
                 if (Odrediste_XKoordinata == null || Odrediste_YKoordinata == null)
                     Odrediste_Key = null;
             }
