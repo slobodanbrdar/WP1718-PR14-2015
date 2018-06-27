@@ -20,6 +20,7 @@ namespace WebAPI
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             HttpContext.Current.Application["Ulogovani"] = new List<String>();
+            HttpContext.Current.Application["Blokirani"] = new List<String>();
         }
     }
 }

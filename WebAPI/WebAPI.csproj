@@ -171,6 +171,7 @@
     <Compile Include="Controllers\KomentariController.cs" />
     <Compile Include="Controllers\KorisniciController.cs" />
     <Compile Include="Controllers\LokacijeController.cs" />
+    <Compile Include="Models\BlockUnblockModel.cs" />
     <Compile Include="Models\NearestFiveModel.cs" />
     <Compile Include="Models\PromenaLokacijeModel.cs" />
     <Compile Include="Controllers\ValuesController.cs" />

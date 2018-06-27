@@ -28,6 +28,14 @@ namespace WebAPI.Controllers
             }
         }
 
+
+        private List<String> GetBlockedUsers
+        {
+            get
+            {
+                return (List<String>)HttpContext.Current.Application["Blokirani"];
+            }
+        }
         [HttpGet]
         [Route("api/Voznje/GetAllVoznje")]
         public IHttpActionResult GetVoznjas([FromUri]String id)
@@ -55,6 +63,9 @@ namespace WebAPI.Controllers
         [HttpGet, Route("api/Voznje/GetVoznja")]
         public IHttpActionResult GetVoznja([FromUri]string id)
         {
+            if (GetBlockedUsers.Contains(id))
+                return Content(HttpStatusCode.Forbidden, "Blokirani ste!");
+
             Voznja voznja = db.Voznjas.Include(lok => lok.Lokacija).ToList().Find(i => i.VoznjaID == id);
             if (voznja == null)
             {
@@ -68,6 +79,12 @@ namespace WebAPI.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutVoznja(Voznja voznja)
         {
+            if ((GetBlockedUsers.Contains(voznja.MusterijaID) && voznja.DispecerID == null) || (GetBlockedUsers.Contains(voznja.MusterijaID) && voznja.VozacID == null))
+                return Content(HttpStatusCode.Forbidden, "Blokirani ste!");
+
+            if (GetBlockedUsers.Contains(voznja.VozacID) && voznja.Odrediste_Key != null) //vozac obradjuje voznju
+                return Content(HttpStatusCode.Forbidden, "Blokirani ste!");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -112,6 +129,9 @@ namespace WebAPI.Controllers
         [Route("api/Voznje/OtkaziVoznju")]
         public IHttpActionResult OktaziVoznju (PromenaVoznjeModel otkazivanje)
         {
+            if (GetBlockedUsers.Contains(otkazivanje.SenderID))
+                return Content(HttpStatusCode.Forbidden, "Blokirani ste!");
+
             if (!GetLoggedUsers.Contains(otkazivanje.SenderID))
             {
                 return Unauthorized();
@@ -161,6 +181,9 @@ namespace WebAPI.Controllers
         {
             if (!GetLoggedUsers.Contains(prom.SenderID))
                 return Unauthorized();
+
+            if (GetBlockedUsers.Contains(prom.SenderID))
+                return Content(HttpStatusCode.Forbidden, "Blokirani ste!");
 
             Korisnik k = kor.Korisnici.Include(voz => voz.Voznje).ToList().Find(korisnik => korisnik.KorisnikID == prom.SenderID);
             if (k.Uloga != EUloga.VOZAC)
@@ -217,6 +240,10 @@ namespace WebAPI.Controllers
             if (!GetLoggedUsers.Contains(prom.SenderID))
                 return Unauthorized();
 
+            if (GetBlockedUsers.Contains(prom.SenderID))            
+                return Content(HttpStatusCode.Forbidden, "Blokirani ste!");
+           
+
             Korisnik k = kor.Korisnici.Include(voz => voz.Voznje).ToList().Find(korisnik => korisnik.KorisnikID == prom.SenderID);
             if (k.Uloga != EUloga.VOZAC)
                 return Unauthorized();
@@ -256,6 +283,9 @@ namespace WebAPI.Controllers
         [Route("api/Voznje/PotvrdiVoznju")]
         public IHttpActionResult PotvrdiVoznju(PotvrdaVoznjeModel potvrda)
         {
+            if (GetBlockedUsers.Contains(potvrda.SenderID))
+                return Content(HttpStatusCode.Forbidden, "Blokirani ste!");
+
             if (!GetLoggedUsers.Contains(potvrda.SenderID))
             {
                 return Unauthorized();
@@ -303,6 +333,9 @@ namespace WebAPI.Controllers
         [ResponseType(typeof(Voznja))]
         public IHttpActionResult PostVoznja(Voznja voznja)
         {
+            if (GetBlockedUsers.Contains(voznja.MusterijaID))
+                return Content(HttpStatusCode.Forbidden, "Blokirani ste!");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -386,6 +419,7 @@ namespace WebAPI.Controllers
             Voznja v = db.Voznjas.Find(model.VoznjaId);
 
 
+
             if (dispecer == null || vozac == null || v == null)
                 return NotFound();
 
@@ -433,6 +467,9 @@ namespace WebAPI.Controllers
         [Route("api/Voznje/DodeliKomentar")]
         public IHttpActionResult DodeliKomentarVoznji(DodelaKomentaraModel dm)
         {
+            if (GetBlockedUsers.Contains(dm.KorisnikID))
+                return Content(HttpStatusCode.Forbidden, "Blokirani ste!");
+
             if (!GetLoggedUsers.Contains(dm.KorisnikID))
                 return Unauthorized();
 
@@ -467,22 +504,7 @@ namespace WebAPI.Controllers
             return Ok(v);
 
         }
-
-        // DELETE: api/Voznje/5
-        [ResponseType(typeof(Voznja))]
-        public IHttpActionResult DeleteVoznja(string id)
-        {
-            Voznja voznja = db.Voznjas.Find(id);
-            if (voznja == null)
-            {
-                return NotFound();
-            }
-
-            db.Voznjas.Remove(voznja);
-            db.SaveChanges();
-
-            return Ok(voznja);
-        }
+       
 
         protected override void Dispose(bool disposing)
         {

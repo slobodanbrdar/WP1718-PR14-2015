@@ -19,8 +19,14 @@
                     loadHomepage();
                 },
                 error: function (jqXHR) {
-                    alert(jqXHR.statusText);
-                    loadHomepage();
+                    if (jqXHR.status == 403) {
+                        alert(jqXHR.responseJSON);
+                        localStorage.removeItem('ulogovan');
+                        location.reload();
+                    } else {
+                        alert(jqXHR.statusText);
+                        loadHomepage();
+                    }
                 }
             })
         },
@@ -28,6 +34,10 @@
             if (jqXHR.status != 409) {
                 alert(jqXHR.statusText)
                 loadHomepage();
+            }else if (jqXHR.status == 403) {
+                alert(jqXHR.responseJSON);
+                localStorage.removeItem('ulogovan');
+                location.reload();
             }
             else {
                 let x = $("input[name='xkoordinata']").val();
@@ -47,14 +57,27 @@
                                 loadHomepage();
                             },
                             error: function (jqXHR) {
-                                alert(jqXHR.statusText);
-                                loadHomepage();
+                                if (jqXHR.status == 403) {
+                                    alert(jqXHR.responseJSON);
+                                    localStorage.removeItem('ulogovan');
+                                    location.reload();
+                                } else {
+                                    alert(jqXHR.statusText);
+                                    loadHomepage();
+                                }
                             }
                         })
                     },
                     error: function (jqXHR) {
-                        alert(jqXHR.statusText);
-                        loadHomepage();
+                        if (jqXHR.status == 403) {
+                            alert(jqXHR.responseJSON);
+                            localStorage.removeItem('ulogovan');
+                            location.reload();
+                        }
+                        else {
+                            alert(jqXHR.statusText);
+                            loadHomepage();
+                        }
                     }
                 })
             }
@@ -94,8 +117,14 @@ function doPotvrda() {
                             loadHomepage();
                         },
                         error: function (jqXHR) {
-                            alert(jqXHR.statusText);
-                            loadHomepage();
+                            if (jqXHR.status == 403) {
+                                alert(jqXHR.responseJSON);
+                                localStorage.removeItem('ulogovan');
+                                location.reload();
+                            } else {
+                                alert(jqXHR.statusText);
+                                loadHomepage();
+                            }
                         }
                     });
                     
@@ -104,6 +133,11 @@ function doPotvrda() {
                     if (jqXHR.statusText == 406) {
                         alert(jqXHR.responseJSON);
                         loadHomepage();
+                    }
+                    else if (jqXHR.status == 403) {
+                        alert(jqXHR.responseJSON);
+                        localStorage.removeItem('ulogovan');
+                        location.reload();
                     }
                     else {
                         alert(jqXHR.statusText);
@@ -117,6 +151,11 @@ function doPotvrda() {
             if (jqXHR.status != 409) {
                 alert(jqXHR.statusText)
                 loadHomepage();
+            }
+            else if (jqXHR.status == 403) {
+                alert(jqXHR.responseJSON);
+                localStorage.removeItem('ulogovan');
+                location.reload();
             }
             else {
                 $.ajax({
@@ -135,14 +174,28 @@ function doPotvrda() {
                                 loadHomepage();
                             },
                             error: function (jqXHR) {  
-                                alert(jqXHR.statusText);
-                                loadHomepage();
+                                if (jqXHR.status == 403) {
+                                    alert(jqXHR.responseJSON);
+                                    localStorage.removeItem('ulogovan');
+                                    location.reload();
+                                }
+                                else {
+                                    alert(jqXHR.statusText);
+                                    loadHomepage();
+                                }
                             }
                         });
                     },
                     error: function (jqXHR) {
-                        alert(jqXHR.statusText);
-                        loadHomepage();
+                        if (jqXHR.status == 403) {
+                            alert(jqXHR.responseJSON);
+                            localStorage.removeItem('ulogovan');
+                            location.reload();
+                        }
+                        else {
+                            alert(jqXHR.statusText);
+                            loadHomepage();
+                        }
                     }
                 });
             }
@@ -168,8 +221,15 @@ function doVoznjaIzmenaVoznje() {
                     loadHomepage();
                 },
                 error: function (jqXHR) {
-                    alert(jqXHR.statusText);
-                    loadHomepage();
+                    if (jqXHR.status == 403) {
+                        alert(jqXHR.responseJSON);
+                        localStorage.removeItem('ulogovan');
+                        location.reload();
+                    }
+                    else {
+                        alert(jqXHR.statusText);
+                        loadHomepage();
+                    }
                 }
             })
         },
@@ -177,6 +237,11 @@ function doVoznjaIzmenaVoznje() {
             if (jqXHR.status != 409) {
                 alert(jqXHR.statusText)
                 loadHomepage();
+            }
+            else if (jqXHR.status == 403) {
+                alert(jqXHR.responseJSON);
+                localStorage.removeItem('ulogovan');
+                location.reload();
             }
             else {
                 let x = $("input[name='xkoordinata']").val();
@@ -196,14 +261,27 @@ function doVoznjaIzmenaVoznje() {
                                 loadHomepage();
                             },
                             error: function (jqXHR) {
-                                alert(jqXHR.statusText);
-                                loadHomepage();
+                                if (jqXHR.status == 403) {
+                                    alert(jqXHR.responseJSON);
+                                    localStorage.removeItem('ulogovan');
+                                    location.reload();
+                                }
+                                else {
+                                    alert(jqXHR.statusText);
+                                    loadHomepage();
+                                }
                             }
                         })
                     },
                     error: function (jqXHR) {
-                        alert(jqXHR.statusText);
-                        loadHomepage();
+                        if (jqXHR.status == 403) {
+                            alert(jqXHR.responseJSON);
+                            localStorage.removeItem('ulogovan');
+                            location.reload();
+                        } else {
+                            alert(jqXHR.statusText);
+                            loadHomepage();
+                        }
                     }
                 })
             }
@@ -532,13 +610,25 @@ function ispisiKreiraneVoznje(data) {
                         loadHomepage();
                     },
                     error: function (jqXHR) {
-                        alert(jqXHR.statusText);
-                        loadHomepage();
+                        if (jqXHR.status == 403) {
+                            alert(jqXHR.responseJSON);
+                            localStorage.removeItem('ulogovan');
+                            location.reload();
+                        }
+                        else {
+                            alert(jqXHR.statusText);
+                            loadHomepage();
+                        }
                     }
                 });                
             },
             error: function (jqXHR, status) {
-                if (jqXHR.status == 406) {
+                if (jqXHR.status == 403) {
+                    alert(jqXHR.responseJSON);
+                    localStorage.removeItem('ulogovan');
+                    location.reload();
+                }
+                else if (jqXHR.status == 406) {
                     alert(jqXHR.responseJSON);
                     $.ajax({
                         type: "GET",
@@ -549,7 +639,13 @@ function ispisiKreiraneVoznje(data) {
                             ispisiKreiraneVoznje(data);
                         },
                         error: function (jqXHR) {
-                            alert(jqXHR.statusText);
+                            if (jqXHR.status == 403) {
+                                alert(jqXHR.responseJSON);
+                                localStorage.removeItem('ulogovan');
+                                location.reload();
+                            } else {
+                                alert(jqXHR.statusText);
+                            }
                         }
                     });
                 } else {
@@ -712,6 +808,11 @@ function ispisiTabeluVoznjiVozac(data) {
             error: function (jqXHR) {
                 if (jqXHR.status == 406) {
                     alert(jqXHR.responseJSON);
+                }
+                else if (jqXHR.status == 403) {
+                    alert(jqXHR.responseJSON);
+                    localStorage.removeItem('ulogovan');
+                    location.reload();
                 }
                 else {
                     alert(jqXHR.statusText);
@@ -892,6 +993,16 @@ function isipisTabeluVoznjiDispecer(data) {
                         doDodelaVoznje();
                     });
                 }
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    alert(jqXHR.responseJSON);
+                    localStorage.removeItem('ulogovan');
+                    location.reload();
+                } else {
+                    alert(jqXHR.statusText);
+                    loadHomepage();
+                }
             }
         });
     })
@@ -914,6 +1025,11 @@ function doDodelaVoznje() {
                 if (jqXHR.status == 406) {
                     alert(jqXHR.responseJSON);
                     loadHomepage();
+                }
+                else if (jqXHR.status == 403) {
+                    alert(jqXHR.responseJSON);
+                    localStorage.removeItem('ulogovan');
+                    location.reload();
                 }
                 else {
                     alert(jqXHR.statusText);
@@ -1137,6 +1253,15 @@ function ispisiTabeluVoznji(data) {
                     });
                 }
 
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    alert(jqXHR.responseJSON);
+                    localStorage.removeItem('ulogovan');
+                    location.reload();
+                } else {
+                    alert(jqXHR.statusText);
+                }
             }
         })
 
@@ -1187,25 +1312,43 @@ function ispisiTabeluVoznji(data) {
                             });
                         },
                         error: function (jqXHR) {
-                            alert(jqXHR.statusText);
-                            $.ajax({
-                                type: "GET",
-                                url: "api/korisnici/KorisnickeVoznje",
-                                data: { id: localStorage.getItem('ulogovan') },
-                                dataType: "json",
-                                success: function (data) {
-                                    ispisiTabeluVoznji(data);
+                            if (jqXHR.status == 403) {
+                                alert(jqXHR.responseJSON);
+                                localStorage.removeItem('ulogovan');
+                                location.reload();
+                            }
+                            else {
+                                alert(jqXHR.statusText);
+                                $.ajax({
+                                    type: "GET",
+                                    url: "api/korisnici/KorisnickeVoznje",
+                                    data: { id: localStorage.getItem('ulogovan') },
+                                    dataType: "json",
+                                    success: function (data) {
+                                        ispisiTabeluVoznji(data);
 
-                                },
-                                error: function (jqXHR) {
-                                    alert(jqXHR.statusText);
-                                    if (jqXHR.status != 406) {
-                                        loadHomepage();
+                                    },
+                                    error: function (jqXHR) {
+                                        alert(jqXHR.statusText);
+                                        if (jqXHR.status != 406) {
+                                            loadHomepage();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
+                            
                         }
                     })
+                }
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    alert(jqXHR.responseJSON);
+                    localStorage.removeItem('ulogovan');
+                    location.reload();
+                } else {
+                    alert(jqXHR.statusText);
+                    loadHomepage();
                 }
             }
         })
@@ -1250,16 +1393,28 @@ function doOtkazVoznja() {
                         loadHomepage();
                     },
                     error: function () {
-                        alert(jqXHR.statusText);
-                        loadHomepage();
+                        if (jqXHR.status == 403) {
+                            alert(jqXHR.responseJSON);
+                            localStorage.removeItem('ulogovan');
+                            location.reload();
+                        } else {
+                            alert(jqXHR.statusText);
+                            loadHomepage();
+                        }
                     }
                 })
                
                 
             },
             error: function (jqXHR) {
-                alert(jqXHR.statusText);
-                loadHomepage();
+                if (jqXHR.status == 403) {
+                    alert(jqXHR.responseJSON);
+                    localStorage.removeItem('ulogovan');
+                    location.reload();
+                } else {
+                    alert(jqXHR.statusText);
+                    loadHomepage();
+                }
             }
         });
     })
@@ -1323,6 +1478,11 @@ function doVoznjaDispecer() {
                                         alert(jqXHR.statusText);
                                         loadHomepage();
                                     }
+                                    else if (jqXHR.status == 403) {
+                                        alert(jqXHR.responseJSON);
+                                        localStorage.removeItem('ulogovan');
+                                        location.reload();
+                                    }
                                     else {
                                         alert("Vozac ne poseduje zeljeni tip automobila");
                                     }
@@ -1331,41 +1491,68 @@ function doVoznjaDispecer() {
                             })
                         },
                         error: function (jqXHR) {
-                            let x = $("input[name='xkoordinata']").val();
-                            let y = $("input[name='ykoordinata']").val();
-                            $.ajax({
-                                type: "PUT",
-                                data: $("form#voznjaDispecer").serialize(),
-                                url: "api/lokacije/PutLokacija",
-                                dataType: "json",
-                                success: function () {
-                                    $.ajax({
-                                        type: "POST",
-                                        data: $("form#voznjaDispecer").serialize(),
-                                        url: "api/voznje/",
-                                        dataType: "json",
-                                        success: function () {
-                                            loadHomepage();
-                                        },
-                                        error: function (jqXHR) {
+                            if (jqXHR.status == 403) {
+                                alert(jqXHR.responseJSON);
+                                localStorage.removeItem('ulogovan');
+                                location.reload();
+                            }
+                            else {
+                                let x = $("input[name='xkoordinata']").val();
+                                let y = $("input[name='ykoordinata']").val();
+                                $.ajax({
+                                    type: "PUT",
+                                    data: $("form#voznjaDispecer").serialize(),
+                                    url: "api/lokacije/PutLokacija",
+                                    dataType: "json",
+                                    success: function () {
+                                        $.ajax({
+                                            type: "POST",
+                                            data: $("form#voznjaDispecer").serialize(),
+                                            url: "api/voznje/",
+                                            dataType: "json",
+                                            success: function () {
+                                                loadHomepage();
+                                            },
+                                            error: function (jqXHR) {
+                                                if (jqXHR.status == 403) {
+                                                    alert(jqXHR.responseJSON);
+                                                    localStorage.removeItem('ulogovan');
+                                                    location.reload();
+                                                }
+                                                else {
+                                                    alert(jqXHR.statusText);
+                                                    loadHomepage();
+                                                }
+                                            }
+                                        })
+                                    },
+                                    error: function (jqXHR) {
+                                        if (jqXHR.status == 403) {
+                                            alert(jqXHR.responseJSON);
+                                            localStorage.removeItem('ulogovan');
+                                            location.reload();
+                                        }
+                                        else {
                                             alert(jqXHR.statusText);
                                             loadHomepage();
                                         }
-                                    })
-                                },
-                                error: function (jqXHR) {
-                                    alert(jqXHR.statusText);
-                                    loadHomepage();
-                                }
-                            })
+                                    }
+                                })
+                            }
                         }
                     });
                 });
             }
         },
         error: function (jqXHR) {
-            alert(jqXHR.statusText);
-            loadHomepage();
+            if (jqXHR.status == 403) {
+                alert(jqXHR.responseJSON);
+                localStorage.removeItem('ulogovan');
+                location.reload();
+            } else {
+                alert(jqXHR.statusText);
+                loadHomepage();
+            }
         }
     });
 
