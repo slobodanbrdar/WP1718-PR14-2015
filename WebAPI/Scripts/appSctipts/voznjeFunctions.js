@@ -685,6 +685,7 @@ function ispisiTabeluVoznjiVozac(data) {
         });
 
         content += "</tbody></table>";
+        content += "<button id='sortiraj' class='w3-button w3-round-large w3-green w3-hover-red'>Sortiraj po udaljenosti</button>";
     }
     $("div#regdiv").html(content);
     $("div#regdiv").show();
@@ -788,6 +789,29 @@ function ispisiTabeluVoznjiVozac(data) {
         });
     });
 
+    $(document).on('click', "button#sortiraj", function (e) {
+        e.stopImmediatePropagation();
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "api/Korisnici",
+            data: { id: localStorage.getItem('ulogovan') },
+            success: function (data) {
+                sortTable(data.XKoordinata, data.YKoordinata);
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    alert(jqXHR.responseJSON);
+                    localStorage.removeItem('ulogovan');
+                    loadHomepage();
+                }
+                else {
+                    alert(jqXHR.statusText);
+                }
+            }
+        });
+    });
+
     $(document).on('click', "button#odbacivoznju", function () {
         var idVoznje = $(this).parent().siblings().eq(0).text();
         $.ajax({
@@ -821,6 +845,49 @@ function ispisiTabeluVoznjiVozac(data) {
             }
         });
     });
+}
+
+function sortTable(x, y) {
+    var table, rows, switching, i, a, b, shouldSwitch;
+    table = document.getElementById("vozacTabela");
+    switching = true;
+
+    while (switching) {
+        switching = false;
+        rows = table.getElementsByTagName("TR");
+        for (i = 2; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            var xT = rows[i].getElementsByTagName("TD")[3].outerText;
+            var yT = rows[i].getElementsByTagName("TD")[4].outerText;
+            var c = x - xT;
+            var d = y - yT;
+            a = Math.sqrt(c * c + d * d);
+
+            xT = rows[i + 1].getElementsByTagName("TD")[3].outerText;
+            yT = rows[i + 1].getElementsByTagName("TD")[4].outerText;
+
+            c = x - xT;
+            d = y - yT;
+            b = Math.sqrt(c * c + d * d);
+
+            if (a > b) {
+                shouldSwitch = true;
+                break;
+            }
+           
+        }
+
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+        }
+
+       
+    }
+}
+
+function getElForSortTable() {
+    
 }
 
 function isipisTabeluVoznjiDispecer(data) {
@@ -1083,6 +1150,8 @@ function getSelect() {
     content += "<option value='Neuspesna'>Neuspesna</option><option value='Uspesna'>Uspesna</option></select>";
     return content;
 }
+
+
 
 function ispisiTabeluVoznji(data) {
     if (data.length == 0) {
