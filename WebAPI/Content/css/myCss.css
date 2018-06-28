@@ -1,0 +1,25 @@
+﻿body {
+    background-color: azure
+}
+
+
+header {
+    align-content: center
+}
+
+#regdiv {
+    float: left
+}
+
+#map {
+    float:right
+}
+
+#submitMap {
+    float:right;
+    clear:right
+}
+
+h1 {
+    text-align:center
+}

@@ -21,8 +21,9 @@
     <script src="Scripts/additional-methods.js"></script>
     <script src="Scripts/jquery.validate.min.js"></script>
     <script src="Scripts/additional-methods.min.js"></script>
-
-
+    <link href="Content/css/bootstrap.css" rel="stylesheet" />
+    <link href="Content/css/w3.css" rel="stylesheet" />
+    <link href="Content/css/myCss.css" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -41,34 +42,30 @@
     </script>
 
     <style>
-        /* Set the size of the div element that contains the map */
+       
         #map {
-            height: 200px; /* The height is 400 pixels */
-            width: 100%; /* The width is the width of the web page */
+            height: 500px; 
+            width: 50%; 
         }
     </style>
 
 
 </head>
 <body>
-    <header id="hdr">
+    <div id="hdr" class="w3-container w3-light-blue ">
         <a href="" id="reg">Registracija</a>
         <a href="" id="odjava"></a>
-        <a href="" id="promena" hidden>Profil</a>
-        <a href="" id="dodajvozaca" hidden>Dodaj vozaca</a>
-        <a href="" id="dodajvoznju" hidden>Zakazi voznju</a>
-        <a href="" id="prikazisvevoznje" hidden>Prikazi sve voznje</a>
-        <a href="" id="kreiranevoznje" hidden>Prikazi kreirane voznje</a>
-        <a href="" id="blockunblock" hidden>Blokiraj/Odblokiraj</a>
-    </header>
+        <a href="" id="promena" hidden> | Profil |</a>
+        <a href="" id="dodajvozaca" hidden> Dodaj vozaca |</a>
+        <a href="" id="dodajvoznju" hidden> Zakazi voznju |</a>
+        <a href="" id="prikazisvevoznje" hidden> Prikazi sve voznje |</a>
+        <a href="" id="kreiranevoznje" hidden> Prikazi kreirane voznje |</a>
+        <a href="" id="blockunblock" hidden> Blokiraj/Odblokiraj |</a>
+    </div>
     <h1>Taxi sluzba</h1>
     <div id="welcomediv"></div>
-    <div id="regdiv">
-
-    </div>
-    <div id="map" hidden>
-
-    </div>
+    <div id="regdiv" class="w3-panel"></div>
+    <div id="map" hidden></div>
     <button id="submitMap" hidden>Potvrdi</button>
     <div id="errdiv" />
     <div id="commentdiv"></div>

@@ -565,14 +565,14 @@ function ispisiKreiraneVoznje(data) {
         var content = "<p> Nema kreiranih voznji <p>"
     }
     else {
-        var content = '<table border="2"> <tr> <td colspan="11" align="center">Moje voznje</td>';
+        var content = '<table border="2" class="w3-table-all w3-hoverable"> <tr> <td colspan="9" align="center">Moje voznje</td>';
         content += "<tr><td>Datum zakazivanja</td><td>Musterija</td><td>Lokacija X koordinata</td><td>Lokaxija Y koordinata</td><td>Odrediste X koordinata</td><td>Odrediste Y koordinata</td>\
-                <td>Zeljeni tip</td><td>Status voznje </td></tr > ";
+                <td>Zeljeni tip</td><td>Status voznje </td><td></td></tr > ";
         $.each(data, function (i, val) {
             content += "<tr> <td>" + val.VoznjaID + "</td><td>" + getUserId(val) + "</td><td>" + val.Lokacija_XKoordinata + "</td><td>" + val.Lokacija_YKoordinata + "</td> <td>" +
                 val.Odrediste_XKoordinata + "</td> <td>" + val.Odrediste_YKoordinata + "</td><td>" + getTip(val.ZeljeniTip) +
                 "</td><td>" + getStatus(val.StatusVoznje) + "</td>";
-            content += "<td><a href='' id='preuzmivoznju'>Preuzmi voznju</a></td></tr>";
+            content += "<td><a class='w3-button w3-round-large w3-green w3-hover-red' id='preuzmivoznju'>Preuzmi voznju</a></td></tr>";
         });
         content += "</table>";
     }
@@ -664,9 +664,10 @@ function ispisiTabeluVoznjiVozac(data) {
         var content = "<label>Minimalna ocena</label><input type='number' id='min'/>  <label>Maksimalna ocena</label><input type='number' id='max'/>";
         content += "</br> <label> Minimalna cena</label><input type='number' id='mincena'/>  <label> Maksimalna cena</label><input type='number' id='maxcena'/>";
         content += "</br> <label> Datum od </label> <input type='date' id='od'/> <label> Datum do </label> <input type='date' id='do'/>";
+
         content += "</br><label>Filtriranje po statusu voznje</label>" + getSelect();
 
-        content += '<table border="2" id="vozacTabela"><thead> <tr> <td colspan="11" align="center">Moje voznje</td></tr>';
+        content += '<table border="2" class="w3-table-all w3-hoverable" id="vozacTabela"><thead> <tr> <td colspan="16" align="center">Moje voznje</td></tr>';
         content += "<tr><th class='datum'>Datum zakazivanja</th><th class='nosort'>Musterija</th><th class='nosort'>Dispecer</th><th class='nosort'>Lokacija X koordinata</th><th class='nosort'>Lokaxija Y koordinata</th><th class='nosort'>Odrediste X koordinata</th><th class='nosort'>Odrediste Y koordinata</th>\
                 <th class='nosort'>Zeljeni tip</th><th class='nosort'>Iznos</th><th class='nosort'>Status voznje</th><th class='nosort'>Komentar</th> <th class='ocena'>Ocena</th> <th class='nosort'>Datum objave</th> <th class='nosort'>Korisnicko ime</th><td class='nosort'></td><td class='nosort'></td></tr></thead><tbody> ";
         
@@ -676,7 +677,7 @@ function ispisiTabeluVoznjiVozac(data) {
                 "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
                 "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td>";
             if (val.StatusVoznje == 4 || val.StatusVoznje == 3) {
-                content += "<td><button id='odbacivoznju'> Odbaci voznju </button></td> <td> <button id='obavivoznju'> Obavi voznju </button></td></tr>"
+                content += "<td><button id='odbacivoznju' class='w3-button w3-round-large w3-green w3-hover-red'> Odbaci voznju </button></td> <td> <button id='obavivoznju' class='w3-button w3-round-large w3-green w3-hover-red'> Obavi voznju </button></td></tr>"
             }
             else {
                 content += "<td></td><td></td></tr>";
@@ -834,7 +835,7 @@ function isipisTabeluVoznjiDispecer(data) {
         content += "</br><label>Ime vozaca</label><input type='text' id='ime'/> <label>Prezime vozaca</label><input type='text' id='prezime'/>"
         content += "</br><label>Ime musterije</label><input type='text' id='imem'/> <label>Prezime musterije</label><input type='text' id='prezimem'/>"
 
-        content += '<table border="2" id="dispecerTabela"><thead> <tr> <td colspan="11" align="center">Moje voznje</td>';
+        content += '<table border="2" class="w3-table-all w3-hoverable" id="dispecerTabela"><thead> <tr> <td colspan="19" align="center">Moje voznje</td></tr>';
         content += "<tr><td class='datum'>Datum zakazivanja</td><td class='nosort'>Vozac</td><td class='nosort'>Vozac ime</td> <td class='nosort'>Vozac prezime </td>\
                 <td class='nosort'>Musterija</td><td class='nosort'>Musterija ime</td><td class='nosort'>Musterija prezime</td><td class='nosort'>Lokacija X koordinata</td>\
                 <td class='nosort'>Lokaxija Y koordinata</td><td class='nosort'>Odrediste X koordinata</td><td class='nosort'>Odrediste Y koordinata</td>\
@@ -846,7 +847,7 @@ function isipisTabeluVoznjiDispecer(data) {
                 "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
                 "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td>";
             if (val.StatusVoznje == 1) {
-                content += "<td><button id='dodelivozacu'>Dodeli vozacu</button></td></tr>";
+                content += "<td><button id='dodelivozacu' class='w3-button w3-round-large w3-green w3-hover-red'>Dodeli vozacu</button></td></tr>";
             } else {
                 content += "<td></td></tr>";
             }
@@ -1093,7 +1094,7 @@ function ispisiTabeluVoznji(data) {
         content += "</br> <label> Datum od </label> <input type='date' id='od'/> <label> Datum do </label> <input type='date' id='do'/>";
 
 
-        content += '<table border="2" id="musterijaTabela"><thead> <tr> <td colspan="15" align="center">Moje voznje</td>';
+        content += '<table border="2" class="w3-table-all w3-hoverable" id="musterijaTabela"><thead> <tr> <td colspan="15" align="center">Moje voznje</td>';
         content += "<tr><th class='datum'>Datum zakazivanja</th><th class='nosort'>Vozac</th><th class='nosort'>Lokacija X koordinata</th><th class='nosort'>Lokaxija Y koordinata</th><th class='nosort'>Odrediste X koordinata</th><th class='nosort'>Odrediste Y koordinata</th>\
                 <th class='nosort'>Zeljeni tip</th><th class='nosort'>Iznos</th><th class='nosort'>Status voznje</th><th class='nosort'>Komentar</th> <th class='ocena'>Ocena</th> <th class='nosort'>Datum objave</th> <th class='nosort'>Korisnicko ime</th><th></th><th></th></tr ><thead> <tbody>";
         content += "</br><label>Filtriranje po statusu voznje</label>" + getSelect();
@@ -1103,11 +1104,11 @@ function ispisiTabeluVoznji(data) {
                 "</td> <td> " + val.Iznos + "</td> <td>" + getStatus(val.StatusVoznje) + "</td> <td>" + isisiOpis(val.KomentarVoznje) + "</td>" +
                 "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td>";
             if (val.StatusVoznje == 1) {
-                content += "<td><button href='' id='otkazivoznju'> Otkazi voznju </button> </td>";
-                content += "<td><button href='' id='izmenivoznju'> Izmeni voznju </button> </td>";
+                content += "<td><button class='w3-button w3-round-large w3-green w3-hover-red' id='otkazivoznju'> Otkazi voznju </button> </td>";
+                content += "<td><button class='w3-button w3-round-large w3-green w3-hover-red' id='izmenivoznju'> Izmeni voznju </button> </td>";
             }
             else if (val.StatusVoznje == 8 && val.KomentarVoznje == null) {
-                content += "<td><button id='kometarisivoznju'> Kometarisi </button></td><td></td>";
+                content += "<td><button id='kometarisivoznju' class='w3-button w3-round-large w3-green w3-hover-red'> Kometarisi </button></td><td></td>";
             }
             else {
                 content += "<td></td><td></td>"
