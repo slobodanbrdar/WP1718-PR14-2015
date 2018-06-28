@@ -452,15 +452,19 @@ function startMap() {
             url: "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + ',' + longitude + "&sensor=true",
             type: "get",
             success: function (data) {
+                $("input[name='broj']").val("");
+                $("input[name='ulica']").val("");
+                $("input[name='mesto']").val("");
+                $("input[name='pozivnibroj']").val("");
                 $("input[name='lokacijavozaca_xkoordinata']").val(latitude);
                 $("input[name='lokacijavozaca_ykoordinata']").val(longitude);
                 if (data.status == "OK") {
-                    if (data.results[0].address_components.length == 7) {
+                    if (data.results[0].address_components.length >= 7) {
                         var adresa = data.results[0].address_components;
                         $("input[name='broj']").val(adresa[0].long_name);
                         $("input[name='ulica']").val(adresa[1].long_name);
                         $("input[name='mesto']").val(adresa[2].long_name);
-                        $("input[name='pozivnibroj']").val(adresa[6].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[data.results[0].address_components.length - 1].long_name);
                     }
                     else if (data.results[0].address_components.length == 6) {
                         var adresa = data.results[0].address_components;

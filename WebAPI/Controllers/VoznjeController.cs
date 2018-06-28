@@ -95,7 +95,7 @@ namespace WebAPI.Controllers
             {
                 return NotFound();
             }
-            if (v.StatusVoznje != EStatus.KREIRANA)
+            if (v.StatusVoznje != EStatus.KREIRANA && v.StatusVoznje != EStatus.FORMIRANA)
                 return Content(HttpStatusCode.NotAcceptable, "Voznja je u medjuvremenu promenila stanje");
 
             v.Lokacija_XKoordinata = voznja.Lokacija_XKoordinata;

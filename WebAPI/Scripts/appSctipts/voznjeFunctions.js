@@ -336,15 +336,19 @@ function startMapPotvrda() {
             url: "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + ',' + longitude + "&sensor=true",
             type: "get",
             success: function (data) {
+                $("input[name='broj']").val("");
+                $("input[name='ulica']").val("");
+                $("input[name='mesto']").val("");
+                $("input[name='pozivnibroj']").val("");
                 $("input[name='odredistex']").val(latitude);
                 $("input[name='odredistey']").val(longitude);
                 if (data.status == "OK") {
-                    if (data.results[0].address_components.length == 7) {
+                    if (data.results[0].address_components.length >= 7) {
                         var adresa = data.results[0].address_components;
                         $("input[name='broj']").val(adresa[0].long_name);
                         $("input[name='ulica']").val(adresa[1].long_name);
                         $("input[name='mesto']").val(adresa[2].long_name);
-                        $("input[name='pozivnibroj']").val(adresa[6].long_name);
+                        $("input[name='pozivnibroj']").val(adresa[data.results[0].address_components.length - 1].long_name);
                     }
                     else if (data.results[0].address_components.length == 6) {
                         var adresa = data.results[0].address_components;
@@ -360,12 +364,8 @@ function startMapPotvrda() {
                         $("input[name='ulica']").val(adresa[0].long_name);
                         $("input[name='mesto']").val(adresa[1].long_name)
                     }
-                    else if (data.results[0].address_components.length > 7) {
-                        var adresa = data.results[0].address_components;
-                        $("input[name='broj']").val(adresa[0].long_name);
-                        $("input[name='ulica']").val(adresa[1].long_name);
-                        $("input[name='mesto']").val(adresa[2].long_name);
-                        $("input[name='pozivnibroj']").val(adresa[data.results[0].address_components.length - 1].long_name);
+                    else {
+                        alert("Molimo unesite rucno podatke o lokaciji");
                     }
                 }
                 else {
@@ -405,6 +405,10 @@ function startMapDodajVoznju() {
             url: "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + ',' + longitude + "&sensor=true",
             type: "get",
             success: function (data) {
+                $("input[name='broj']").val("");
+                $("input[name='ulica']").val("");
+                $("input[name='mesto']").val("");
+                $("input[name='pozivnibroj']").val("");
                 $("input[name='lokacija_xkoordinata']").val(latitude);
                 $("input[name='lokacija_ykoordinata']").val(longitude);
                 if (data.status == "OK") {
@@ -886,9 +890,6 @@ function sortTable(x, y) {
     }
 }
 
-function getElForSortTable() {
-    
-}
 
 function isipisTabeluVoznjiDispecer(data) {
     if (data.length == 0) {
@@ -915,7 +916,11 @@ function isipisTabeluVoznjiDispecer(data) {
                 "<td>" + isisiOcenu(val.KomentarVoznje) + "</td>" + "<td>" + isisiDatum(val.KomentarVoznje) + "</td><td>" + ispisiKorisnickoIme(val.KomentarVoznje) + "</td>";
             if (val.StatusVoznje == 1) {
                 content += "<td><button id='dodelivozacu' class='w3-button w3-round-large w3-green w3-hover-red'>Dodeli vozacu</button></td></tr>";
-            } else {
+            }
+            else if (val.StatusVoznje == 3) {
+                content += "<td><button id='izmeni' class='w3-button w3-round-large w3-green w3-hover-red'>Izmeni voznju</button></td></tr>";
+            }
+            else {
                 content += "<td></td></tr>";
             }
         });
@@ -1074,6 +1079,54 @@ function isipisTabeluVoznjiDispecer(data) {
             }
         });
     })
+
+    $(document).on('click', "button#izmeni", function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        var xKoordinata = $(this).parent().siblings().eq(7).text();
+        var yKoordinata = $(this).parent().siblings().eq(8).text();
+        var idVoznje = $(this).parent().siblings().eq(0).text();
+        $.ajax({
+            type: "GET",
+            data: { id: idVoznje },
+            dataType: "json",
+            url: "api/Voznje/GetVoznja",
+            success: function (data) {
+                if (data.StatusVoznje != 3) {
+                    alert("Voznja je u medjuvremenu promenila stanje, te se ne moze izmeniti");
+                    loadHomepage();
+                }
+                else {
+                    $("div#regdiv").load("./Content/partials/izmeniVoznju.html", function () {
+                        $("input[name='musterijaId']").val(localStorage.getItem('ulogovan'));
+                        $("input[name='lokacija_xkoordinata']").val(data.Lokacija_XKoordinata);
+                        $("input[name='lokacija_ykoordinata']").val(data.Lokacija_YKoordinata);
+                        $("input[name='xkoordinata']").val(data.Lokacija_xKoordinata);
+                        $("input[name='ykoordinata']").val(data.Lokacija_YKoordinata);
+                        $("input[name='ulica']").val(data.Lokacija.Ulica);
+                        $("input[name='broj']").val(data.Lokacija.Broj);
+                        $("input[name='mesto']").val(data.Lokacija.Mesto);
+                        $("input[name='pozivnibroj']").val(data.Lokacija.PozivniBroj);
+                        $("input[name='statusvoznje']").val(data.StatusVoznje);
+                        $("input[name='voznjaId']").val(data.VoznjaID);
+                        $("select[name='zeljenitip']").val(data.Zeljenitip);
+
+                        validateIzmenaVoznje();
+                    });
+                }
+
+            },
+            error: function (jqXHR) {
+                if (jqXHR.status == 403) {
+                    alert(jqXHR.responseJSON);
+                    localStorage.removeItem('ulogovan');
+                    location.reload();
+                } else {
+                    alert(jqXHR.statusText);
+                }
+            }
+        })
+    });
 
 }
 
